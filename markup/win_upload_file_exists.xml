@@ -1,0 +1,37 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:window
+      id        = "winUploadFileExists"
+      title     = "File already exists"
+      icon      = ""
+      center    = "true"
+      width     = "512"
+      skin      = "bk-window"
+      class     = "relative"
+      modal     = "false">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3>File already exists</h3>
+            <div id="uploadFileExistsMsg" class="alertMsg">Do you want to overwrite this file?</div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnUploadOverwriteAll"
+                skin="btn-default-css3"
+                class="btn-green"
+                visible="false">Overwrite all</a:button>
+            <a:button id="btnUploadSkipAll"
+                skin="btn-default-css3"
+                class="btn-red"
+                visible="false">Skip all</a:button>
+            <a:filler/>
+            <a:button id="btnUploadOverwrite"
+                default="3"
+                skin="btn-default-css3"
+                class="btn-green">Overwrite</a:button>
+            <a:button id="btnUploadSkip"
+                skin="btn-default-css3"
+                class="btn-red">Skip</a:button>
+        </a:hbox>
+    </a:window>
+
+</a:application>

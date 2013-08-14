@@ -1,0 +1,34 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:window id="winUploadFiles"
+      title   = "Upload Files"
+      buttons = "close"
+      skin    = "bk-window"
+      class   = "relative dark-bg"
+      modal   = "false"
+      center  = "true"
+      width   = "354"
+      kbclose = "true">
+        <a:vbox edge="10" padding="0" align="center">
+            <div id="uploadDropArea" class="uploadDropArea" margin="10">Drag &amp; Drop</div>
+            <a:hbox id="hboxUploadNoFolders" class="uploadSelectButtons" padding="10" height="60" pack="center" align="center">
+                <span class="uploadText">or</span>
+                <a:button skin="btn-default-css3" disabled="true">Select files to upload</a:button>
+            </a:hbox>
+            <a:hbox id="hboxUploadWithFolders" class="uploadSelectButtons" padding="5" height="60" pack="center" align="center" visible="false">
+                <span class="uploadText">...or select</span>
+                <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">files</a:button>
+                <span class="uploadText">or</span>
+                <a:button skin="btn-default-css3" disabled="true">a complete folder</a:button>
+            </a:hbox>
+            <div class="txtUploadTargetFolder" margin="0 0 10">Upload folder: <span id="uplTargetFolder"></span></div>
+        </a:vbox>
+        <input id="fileUploadSelect" type="file" multiple="multiple" />
+        <input id="folderUploadSelect" type="file" webkitdirectory="" directory="" />
+
+        <a:hbox padding="10" pack="end" edge="6 10 10">
+            <a:button skin="btn-default-css3">Close</a:button>
+        </a:hbox>
+    </a:window>
+    
+</a:application>
