@@ -80,7 +80,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         
         // expect.html.setConstructor(function(page){
         //     if (typeof page == "object")
-        //         return page.tab.aml.getPage("editor::" + page.editorType).$ext;
+        //         return page.pane.aml.getPage("editor::" + page.editorType).$ext;
         // });
         
         describe('upload', function() {
