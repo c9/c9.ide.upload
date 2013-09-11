@@ -339,11 +339,11 @@ define(function(require, module, exports) {
                 /**
                  * Uploads a batch of files to the server.
                  * 
-                 * @param targetPath {String} Path on the server where to store
+                 * @param {String} targetPath Path on the server where to store
                  *   the files
-                 * @param batch {Batch} the batch of files to upload
+                 * @param {Batch} batch the batch of files to upload
                  * @param dialog {function()}
-                 * @param callback {Function} The callback is called when all
+                 * @param {Function} callback The callback is called when all
                  *   file uploads have been scheduled. It will not wait for the
                  *   upload to complete
                  * 
@@ -353,8 +353,8 @@ define(function(require, module, exports) {
                 /**
                  * Upload a single file
                  * 
-                 * @param file {File} The file object from the file HTML5 API
-                 * @param fullPath {String} Target path of the file
+                 * @param {File} file The file object from the file HTML5 API
+                 * @param {String} fullPath Target path of the file
                  * @returns {Job} the upload job to track the upload
                  */
                 uploadFile: manager.uploadFile.bind(manager),
@@ -363,9 +363,9 @@ define(function(require, module, exports) {
                  * Extract the batch of files to upload from a file upload
                  * inpuit element.
                  * 
-                 * @param inputEl {HTMLInputElement} The file upload input 
+                 * @param {HTMLInputElement} inputEl The file upload input 
                  *   element.
-                 * @param callback {Fucntion} Callback returns the Batch object
+                 * @param {Fucntion} callback Callback returns the Batch object
                  */
                 batchFromInput: manager.batchFromInput.bind(manager),
                 
@@ -373,8 +373,8 @@ define(function(require, module, exports) {
                  * Extract the batch of files to upload from a HTML5 native
                  * drop event.
                  * 
-                 * @param dropEvent {DragEvent} native DOM drop event
-                 * @param callback {Fucntion} Callback returns the Batch object
+                 * @param {DragEvent} dropEvent native DOM drop event
+                 * @param {Fucntion} callback Callback returns the Batch object
                  */
                 batchFromDrop: manager.batchFromDrop.bind(manager),
                 
@@ -383,15 +383,15 @@ define(function(require, module, exports) {
                  * directory entry.
                  * drop event.
                  * 
-                 * @param entries {Object} HTML5 file API entries
-                 * @param callback {Fucntion} Callback returns the Batch object
+                 * @param {Object} entries HTML5 file API entries
+                 * @param {Fucntion} callback Callback returns the Batch object
                  */
                 batchFromFileApi: manager.batchFromFileApi.bind(manager),
                 
                 /**
                  * Find an upload job by its ID
                  * 
-                 * @param id {Number} The job id 
+                 * @param {Number} id The job id 
                  * @returns {Job} the associated job
                  */
                 jobById: manager.jobById.bind(manager),

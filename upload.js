@@ -417,15 +417,15 @@ define(function(require, exports, module) {
             /**
              * Upload files from a native drag and drop operation
              * 
-             * @param dropEvent {DragEvent} native DOM drop event
-             * @param targetPath {String} path where to upload the files
+             * @param {DragEvent} dropEvent native DOM drop event
+             * @param {String} targetPath path where to upload the files
              */
             uploadFromDrop      : uploadFromDrop,
             
             /**
              * Upload files from an file upload input element
              * 
-             * @param inputEleement {HTMLInputElement} the upload input DOM 
+             * @param {HTMLInputElement} inputEleement the upload input DOM 
              *   element
              */
             uploadFromInput     : uploadFromInput
