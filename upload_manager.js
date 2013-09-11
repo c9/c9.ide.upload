@@ -320,7 +320,7 @@ define(function(require, module, exports) {
             "upload_manager": {
                 
                 /**
-                 * Whether the browser supports folder uploads
+                 * Specifies whether the browser supports folder uploads
                  */
                 SUPPORT_FOLDER_UPLOAD: UploadBatch.SUPPORT_FOLDER_UPLOAD,
                 
