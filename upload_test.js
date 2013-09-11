@@ -78,9 +78,9 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     function main(options, imports, register) {
         var upload  = imports.upload;
         
-        // expect.html.setConstructor(function(page){
-        //     if (typeof page == "object")
-        //         return page.pane.aml.getPage("editor::" + page.editorType).$ext;
+        // expect.html.setConstructor(function(tab){
+        //     if (typeof tab == "object")
+        //         return tab.pane.aml.getPage("editor::" + tab.editorType).$ext;
         // });
         
         describe('upload', function() {
