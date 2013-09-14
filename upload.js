@@ -2,7 +2,7 @@ define(function(require, exports, module) {
     "use strict";
     
     main.consumes = [
-        "plugin", "util", "ui", "layout", "menus", "fs", "tree",
+        "Plugin", "util", "ui", "layout", "menus", "fs", "tree",
         "fs.cache.xml", "upload_manager", "nodeapi"
     ];
     main.provides = ["upload"];
@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     
     function main(options, imports, register) {
         var util          = imports.util;
-        var Plugin        = imports.plugin;
+        var Plugin        = imports.Plugin;
         var ui            = imports.ui;
         var menus         = imports.menus;
         var fsCache       = imports["fs.cache.xml"];

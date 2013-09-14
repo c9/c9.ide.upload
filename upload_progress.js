@@ -1,12 +1,12 @@
 define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "util", "ui", "layout", "tree", "upload_manager", "anims"
+        "Plugin", "util", "ui", "layout", "tree", "upload_manager", "anims"
     ];
     main.provides = ["upload_progress"];
     return main;
     
     function main(options, imports, register) {
-        var Plugin        = imports.plugin;
+        var Plugin        = imports.Plugin;
         var ui            = imports.ui;
         var layout        = imports.layout;
         var tree          = imports.tree;
