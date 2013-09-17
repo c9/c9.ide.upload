@@ -58,7 +58,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         {
             consumes : ["emitter", "apf", "ui"],
             provides : [
-                "commands", "commands", "layout", "watcher", 
+                "commands", "commands", "layout", "watcher", "clipboard",
                 "save", "panels", "tabs", "preferences", "anims"
             ],
             setup    : expect.html.mocked
