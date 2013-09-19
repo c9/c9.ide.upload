@@ -1,7 +1,7 @@
 define(function(require, module, exports) {
     "use strict";
     
-    main.consumes = ["fs", "nodeapi"];
+    main.consumes = ["fs"];
     main.provides = ["upload_manager"];
     return main;
 
@@ -17,11 +17,10 @@ define(function(require, module, exports) {
      */
 
     function main(options, imports, register) {
-        var path        = imports.nodeapi.path;
-        var UploadBatch = require("./batch");
-
-        var EventEmitter = imports.nodeapi.events;
-        var fs           = imports.fs;
+        var path            = require("path");
+        var EventEmitter    = require("events").EventEmitter;
+        var UploadBatch     = require("./batch");
+        var fs              = imports.fs;
             
         var STATE_NEW       = "new";
         var STATE_UPLOADING = "uploading";

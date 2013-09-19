@@ -14,9 +14,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             local       : false
         },
 
-        "plugins/c9.core/events",
         "plugins/c9.core/ext",
-        "plugins/c9.nodeapi/nodeapi",
         {
             packagePath: "plugins/c9.vfs.client/vfs_client",
             smithIo     : {
