@@ -13,8 +13,8 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             hosted      : true,
             local       : false
         },
-
         "plugins/c9.core/ext",
+        "plugins/c9.core/http",
         {
             packagePath: "plugins/c9.vfs.client/vfs_client",
             smithIo     : {
@@ -33,13 +33,6 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             workerPrefix: "/static/plugins/c9.ide.upload"
         },
         
-        // Mock plugins
-        {
-            consumes : [],
-            provides : ["http"],
-            setup    : function(options, imports, register) { register(null, {http: {}}); }
-        },
-
         {
             consumes : ["upload_manager", "fs"],
             provides : [],
