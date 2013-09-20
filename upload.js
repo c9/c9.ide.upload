@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "plugin", "util", "ui", "layout", "menus", "fs", "tree",
-        "fs.cache.xml", "upload_manager"
+        "fs.cache.xml", "upload_manager", "apf"
     ];
     main.provides = ["upload"];
     return main;
@@ -16,6 +16,7 @@ define(function(require, exports, module) {
         var fsCache       = imports["fs.cache.xml"];
         var tree          = imports.tree;
         var uploadManager = imports.upload_manager;
+        var apf           = imports.apf;
         
         var path          = require("path");
         var css           = require("text!./upload.css");
@@ -40,14 +41,20 @@ define(function(require, exports, module) {
             loaded = true;
             
             // Menus
-            menus.addItemByPath("File/~", new apf.divider(), 350, plugin);
-            menus.addItemByPath("File/Upload Local Files...", new apf.item({
+            menus.addItemByPath("File/~", new ui.divider(), 350, plugin);
+            menus.addItemByPath("File/Upload Local Files...", new ui.item({
                 onclick : showUploadWindow
             }), 370, plugin);
 
+            menus.addItemByPath("File/Download Project", new ui.item({
+                onclick : function(){
+                    window.open("/download");
+                }
+            }), 390, plugin);
+
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree){
-                menus.addItemToMenu(mnuCtxTree, new apf.item({
+                menus.addItemToMenu(mnuCtxTree, new ui.item({
                     id      : "mnuCtxTreeUpload",
                     match   : "[folder]",
                     caption : "Upload",
