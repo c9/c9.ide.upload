@@ -1,13 +1,13 @@
 define(function(require, exports, module) {
     main.consumes = [
-        "Plugin", "upload", "tree", "ui", "layout"
+        "plugin", "upload", "tree", "ui", "layout"
     ];
 
     main.provides = ["dragdrop"];
     return main;
 
     function main(options, imports, register) {
-        var Plugin   = imports.Plugin;
+        var Plugin   = imports.plugin;
         var upload   = imports.upload;
         var tree     = imports.tree;
         var ui       = imports.ui;
