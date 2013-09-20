@@ -1,7 +1,7 @@
 define(function(require, module, exports) {
     "use strict";
     
-    main.consumes = ["fs", "nodeapi"];
+    main.consumes = ["Plugin", "fs"];
     main.provides = ["upload_manager"];
     return main;
 
@@ -17,11 +17,14 @@ define(function(require, module, exports) {
      */
 
     function main(options, imports, register) {
-        var path        = imports.nodeapi.path;
+        var path   = imports.nodeapi.path;
+        var fs     = imports.fs;
+        var Plugin = imports.Plugin;
+        
         var UploadBatch = require("./batch");
-
-        var EventEmitter = imports.nodeapi.events;
-        var fs           = imports.fs;
+        var UploadJob   = require("./upload_job");
+        
+        /***** Initialization *****/
             
         var STATE_NEW       = "new";
         var STATE_UPLOADING = "uploading";
@@ -29,25 +32,29 @@ define(function(require, module, exports) {
         var STATE_RESUME    = "resume";
         var STATE_DONE      = "done";
         var STATE_ERROR     = "error";
+        
+        /***** Methods *****/
+        
+        var plugin = new Plugin("Ajax.org", main.consumes);
+        var emit   = plugin.getEmitter();
 
-        function UploadManager(options) {
-            this.jobs               = [];
-            this.filesPrefix        = options.filesPrefix;
-            this.concurrentUploads  = options.concurrentUploads || 6;
+        var jobs, filesPrefix, concurrentUploads
 
-            var emitter = new EventEmitter();
-            this.on     = emitter.on.bind(emitter);
-            this.off    = emitter.off.bind(emitter);
-            this._emit  = emitter.emit.bind(emitter);
+        var loaded = false;
+        function load(){
+            if (loaded) return false;
+            loaded = true;
+            
+            jobs               = [];
+            filesPrefix        = options.filesPrefix;
+            concurrentUploads  = options.concurrentUploads || 6;
         }
         
-        UploadManager.isSupported = function() {
+        function isSupported() {
             return (window.FormData);
         };
         
-        UploadManager.prototype.upload = function(targetPath, batch, dialog, callback) {
-            var that = this;
-            
+        function upload(targetPath, batch, dialog, callback) {
             forEach(batch.getRoots(), function(root, next) {
                 fs.exists(path.join(targetPath, root), function(exists) {
                     if (!exists) 
@@ -103,14 +110,14 @@ define(function(require, module, exports) {
                     
                     var uploaded = 0;
                     files.forEach(function(file) {
-                        var job =  that.uploadFile(file, path.join(targetPath, file.fullPath));
+                        var job =  uploadFile(file, path.join(targetPath, file.fullPath));
                         file.job = job;
-                        job.on("changeState", function(state) {
-                            if (state == STATE_DONE || state == STATE_ERROR) {
+                        job.on("changeState", function(e) {
+                            if (e.state == STATE_DONE || e.state == STATE_ERROR) {
                                 uploaded++;
                                 
                                 if (uploaded == files.length)
-                                    that._emit("batchDone", batch);
+                                    emit("batchDone", { batch: batch });
                             }
                         });
                     });
@@ -120,49 +127,48 @@ define(function(require, module, exports) {
             }
         };
         
-        UploadManager.prototype._createJob = function(file, fullPath) {
-            return new UploadJob(file, fullPath, this);
+        function _createJob(file, fullPath) {
+            return new UploadJob(file, fullPath, this, options.workerPrefix);
         };
         
-        UploadManager.prototype.uploadFile = function(file, fullPath) {
-            var job = this._createJob(file, fullPath);
-            job.on("changeState", this._check.bind(this));
+        function uploadFile(file, fullPath) {
+            var job = _createJob(file, fullPath);
+            job.on("changeState", _check.bind(this));
             
-            this.jobs.push(job);
-            this._emit("addJob", job);
+            jobs.push(job);
+            emit("addJob", { job: job });
             
             // give caller a chance to attach event listeners
-            setTimeout(this._check.bind(this), 0);
+            setTimeout(_check.bind(this), 0);
             return job;
         };
 
-        UploadManager.prototype.batchFromInput = function(inputEl, callback) {
+        function batchFromInput(inputEl, callback) {
             return UploadBatch.fromInput(inputEl, callback);
         };
         
-        UploadManager.prototype.batchFromDrop = function(dropEvent, callback) {
+        function batchFromDrop(dropEvent, callback) {
             return UploadBatch.fromDrop(dropEvent, callback);
         };
         
-        UploadManager.prototype.batchFromFileApi = function(entries, callback) {
+        function batchFromFileApi(entries, callback) {
             return UploadBatch.fromFileApi(entries, callback);
         };
         
-        UploadManager.prototype.jobById = function(id) {
-            for (var i = 0; i < this.jobs.length; i++) {
-                var job = this.jobs[i];
+        function jobById(id) {
+            for (var i = 0; i < jobs.length; i++) {
+                var job = jobs[i];
                 if (job.id == id) {
                     return job;
                 }
             }
         };
         
-        UploadManager.prototype._check = function() {
-            var that = this;
-            this.jobs = this.jobs.filter(function(job) {
+        function _check() {
+            jobs = jobs.filter(function(job) {
                 if (job.state === STATE_DONE || job.state === STATE_ERROR) {
                     setTimeout(function() {
-                        that._emit("removeJob", job);
+                        emit("removeJob", { job: job });
                     }, 0);
                     return false;
                 }
@@ -171,7 +177,7 @@ define(function(require, module, exports) {
             
             var wip = [];
             var candidates = [];
-            this.jobs.forEach(function(job) {
+            jobs.forEach(function(job) {
                 switch (job.state) {
                     case STATE_RESUME:
                         candidates.push(job);
@@ -190,105 +196,13 @@ define(function(require, module, exports) {
                 }
             });
 
-            for (var i=wip.length; i<this.concurrentUploads; i++) {
+            for (var i=wip.length; i<concurrentUploads; i++) {
                 var job = candidates.pop();
                 if (!job)
                     break;
                     
                 job._startUpload();
             }
-        };
-            
-        function UploadJob(file, fullPath, manager) {
-            this.fullPath = fullPath;
-            this.file = file;
-            this.manager = manager;
-            this.state = STATE_NEW;
-            this.progress = 0;
-            this.id = UploadJob.ID++;
-            
-            var emitter = new EventEmitter();
-            this.on = emitter.on.bind(emitter);
-            this.off = emitter.off.bind(emitter);
-            this._emit = emitter.emit.bind(emitter);
-        }
-        
-        UploadJob.ID = 1;
-        
-        UploadJob.prototype.cancel = function() {
-            if (this.xhr)
-                this.xhr.abort();
-                
-            this._setState(STATE_ERROR);
-        };
-        
-        UploadJob.prototype._setState = function(state) {
-            this.state = state;
-            this._emit("changeState", state);
-            this._emit(state);
-        };
-
-        UploadJob.prototype._error = function(code, message) {
-            this.error = {
-                code: code,
-                message: message
-            };
-            this._setState(STATE_ERROR);
-        };
-        
-        UploadJob.prototype._progress = function(progress) {
-            this.progress = progress;
-            this._emit("progress", progress);
-        };
-        
-        UploadJob.prototype._startUpload = function() {
-            var job = this;
-            job._setState(STATE_UPLOADING);
-                            
-            var url = path.join(job.manager.filesPrefix, job.fullPath);
-            
-            var xhr = new XMLHttpRequest();
-            xhr.open("PUT", url, true);
-            xhr.onload = function(e) { 
-                job._progress(1);
-                if (xhr.status >= 400)
-                    job._error(xhr.status, xhr.statusText);
-                else
-                    job._setState("done");
-                xhr = null;
-            };
-            xhr.upload.onprogress = function(e) {
-                if (e.lengthComputable) {
-                    job._progress(e.loaded / e.total);
-                }
-            };
-    
-            xhr.send(job.file);
-        };
-        
-        UploadJob.prototype._startUploadWorker = function() {
-            var job = this;
-            job._setState(STATE_UPLOADING);
-                            
-            var url = path.join(job.manager.filesPrefix, job.fullPath);
-            
-            var worker = new Worker(path.join(options.workerPrefix, "upload_worker.js"));
-            worker.postMessage({method: "start", args: [job.file, url]});
-            
-            this.xhr = {
-                abort: worker.postMessage.bind(worker, {method: "abort"})
-            };
-            
-            worker.onmessage = function(msg) {
-                var method = msg.data.method;
-                var args = msg.data.args || [];
-                if (method == "_setState") {
-                    this.xhr = null;
-                    worker.terminate();
-                }
-                    
-                job[method].apply(job, args);
-            };        
         };
         
         function forEach(list, onEntry, callback) {
@@ -304,101 +218,199 @@ define(function(require, module, exports) {
             })(0);
         }
         
+        /***** Lifecycle *****/
+        
+        plugin.on("load", function(){
+            load();
+        });
+        plugin.on("enable", function(){
+            
+        });
+        plugin.on("disable", function(){
+            
+        });
+        plugin.on("unload", function(){
+            loaded = false;
+        });
+        
+        /***** Register and define API *****/
+        
+        /**
+         * Object representing the upload of a single file.
+         * @class Job
+         * @extends Object
+         */
+        /**
+         * Aborts the upload of the file.
+         * @method cancel
+         */
+        /**
+         * The full path to the file to be uploaded.
+         * @property {String} fullPath
+         * @readonly
+         */
+        /**
+         * An instance of the HTML5 File API.
+         * @property {File} file
+         * @readonly
+         */
+        /**
+         * The upload manager responsible for this job.
+         * @property {upload_manager} manager
+         * @readonly
+         */
+        /**
+         * Retrieves the state of the upload of the file. 
+         * The value will be one of the following values: 
+         * 
+         * * "new"
+         * * "uploading"
+         * * "paused"
+         * * "resume"
+         * * "done"
+         * * "error"
+         * 
+         * @property {String} state
+         * @readonly
+         */
+        /**
+         * A value between 0 and 1 specifying the portion of the file that has
+         * been uploaded.
+         * @property {Number} progress
+         * @readonly
+         */
+        /**
+         * Fires when the state of the job changes.
+         * @event changeState
+         * @param {Object} e
+         * @param {String} e.state  The state of the job. See also {@link #state}.
+         */
+        /**
+         * Fires when the progress of the file upload changes.
+         * @event progress
+         * @param {Object} e
+         * @param {Number} e.progress  The progress of the job. See also {@link #progress}
+         */
+        /**
+         * Object representing the upload of a set of files or folders.
+         * @class Batch
+         * @extends Object
+         */
         /**
          * The upload manager handles all file uploads. It keeps a list of all
          * scheduled jobs and tracks their progress. The upload manager does not 
          * depend on any UI.
-         * 
-         * @event addJob Fires when an upload is started. Passes a Job instance
-         * @event removeJob Fires when a job has finished uploading of faild to
-         *   upload. Passes the Job object
-         * @event batchDone Fires when all files of an upload batch are uploaded
-         *   Passes the batch object.
+         * @singleton
          */
-        var manager = new UploadManager(options);
+        plugin.freezePublicAPI({
+            _events : [
+                /** 
+                 * Fires when an upload is started. Passes a Job instance
+                 * @event addJob
+                 * @param {Object} e
+                 * @param {Job} e.job
+                 */
+                /**
+                 * Fires when a job has finished uploading of faild to
+                 *   upload. Passes the Job object
+                 * @event removeJob 
+                 * @param {Object} e
+                 * @param {Job} e.job 
+                 */
+                /**
+                 * Fires when all files of an upload batch are uploaded
+                 *   Passes the batch object.
+                 * @event batchDone
+                 * @param {Object} e
+                 * @param {Batch} e.batch  
+                 */
+            ],
+            
+            /**
+             * Specifies whether the browser supports folder uploads
+             * @property {Boolean} SUPPORT_FOLDER_UPLOAD
+             */
+            SUPPORT_FOLDER_UPLOAD: UploadBatch.SUPPORT_FOLDER_UPLOAD,
+            
+            /**
+             * Checks whether file upload API is supported
+             * 
+             * @returns {Boolean} whether the browser supports file uploads
+             */
+            isSupported: isSupported,
+            
+            /**
+             * Array of all active upload jobs
+             * @property {Job[]} jobs
+             */
+            get jobs() { return jobs; },
+            
+            /**
+             * Uploads a batch of files to the server.
+             * 
+             * @param {String} targetPath Path on the server where to store
+             *   the files
+             * @param {Batch} batch the batch of files to upload
+             * @param dialog {function()}
+             * @param {Function} callback The callback is called when all
+             *   file uploads have been scheduled. It will not wait for the
+             *   upload to complete
+             */
+            upload: upload,
+            
+            /**
+             * Upload a single file
+             * 
+             * @param {File} file The file object from the file HTML5 API
+             * @param {String} fullPath Target path of the file
+             * @returns {Job} the upload job to track the upload
+             */
+            uploadFile: uploadFile,
+            
+            /**
+             * Extract the batch of files to upload from a file upload
+             * inpuit element.
+             * 
+             * @param {HTMLInputElement} inputEl The file upload input 
+             *   element.
+             * @param {Function} callback Callback returns the Batch object
+             * @return {Batch}
+             */
+            batchFromInput: batchFromInput,
+            
+            /**
+             * Extract the batch of files to upload from a HTML5 native
+             * drop event.
+             * 
+             * @param {DragEvent} dropEvent native DOM drop event
+             * @param {Function} callback Callback returns the Batch object
+             * @return {Batch}
+             */
+            batchFromDrop: batchFromDrop,
+            
+            /**
+             * Extract the batch of files to upload from a HTML5 FILE API 
+             * directory entry.
+             * drop event.
+             * 
+             * @param {Object} entries HTML5 file API entries
+             * @param {Function} callback Callback returns the Batch object
+             * @return {Batch}
+             */
+            batchFromFileApi: batchFromFileApi,
+            
+            /**
+             * Find an upload job by its ID
+             * 
+             * @param {Number} id The job id 
+             * @return {Job} the associated job
+             */
+            jobById: jobById,
+        });
+        
+        
         register(null, {
-            "upload_manager": {
-                
-                /**
-                 * Specifies whether the browser supports folder uploads
-                 */
-                SUPPORT_FOLDER_UPLOAD: UploadBatch.SUPPORT_FOLDER_UPLOAD,
-                
-                /**
-                 * Checks whether file upload API is supported
-                 * 
-                 * @returns {Boolean} whether the browser supports file uploads
-                 */
-                isSupported: UploadManager.isSupported,
-                
-                /**
-                 * Array of all active upload jobs
-                 */
-                get jobs() { return manager.jobs; },
-                
-                /**
-                 * Uploads a batch of files to the server.
-                 * 
-                 * @param {String} targetPath Path on the server where to store
-                 *   the files
-                 * @param {Batch} batch the batch of files to upload
-                 * @param dialog {function()}
-                 * @param {Function} callback The callback is called when all
-                 *   file uploads have been scheduled. It will not wait for the
-                 *   upload to complete
-                 * 
-                 */
-                upload: manager.upload.bind(manager),
-                
-                /**
-                 * Upload a single file
-                 * 
-                 * @param {File} file The file object from the file HTML5 API
-                 * @param {String} fullPath Target path of the file
-                 * @returns {Job} the upload job to track the upload
-                 */
-                uploadFile: manager.uploadFile.bind(manager),
-                
-                /**
-                 * Extract the batch of files to upload from a file upload
-                 * inpuit element.
-                 * 
-                 * @param {HTMLInputElement} inputEl The file upload input 
-                 *   element.
-                 * @param {Fucntion} callback Callback returns the Batch object
-                 */
-                batchFromInput: manager.batchFromInput.bind(manager),
-                
-                /**
-                 * Extract the batch of files to upload from a HTML5 native
-                 * drop event.
-                 * 
-                 * @param {DragEvent} dropEvent native DOM drop event
-                 * @param {Fucntion} callback Callback returns the Batch object
-                 */
-                batchFromDrop: manager.batchFromDrop.bind(manager),
-                
-                /**
-                 * Extract the batch of files to upload from a HTML5 FILE API 
-                 * directory entry.
-                 * drop event.
-                 * 
-                 * @param {Object} entries HTML5 file API entries
-                 * @param {Fucntion} callback Callback returns the Batch object
-                 */
-                batchFromFileApi: manager.batchFromFileApi.bind(manager),
-                
-                /**
-                 * Find an upload job by its ID
-                 * 
-                 * @param {Number} id The job id 
-                 * @returns {Job} the associated job
-                 */
-                jobById: manager.jobById.bind(manager),
-                
-                on: manager.on.bind(manager),
-                off: manager.off.bind(manager)
-            }
+            "upload_manager": plugin
         });
     }
 });

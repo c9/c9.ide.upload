@@ -25,7 +25,7 @@ define(function(require, exports, module) {
         
         /***** Initialization *****/
         
-        var MAX_FILE_COUNT = options.maxFileCount || 20000;
+        var MAX_FILE_COUNT  = options.maxFileCount || 20000;
         var MAX_UPLOAD_SIZE = options.maxUploadSize || 50 * 1000 * 1000;
 
         var plugin = new Plugin("Ajax.org", main.consumes);
@@ -60,7 +60,8 @@ define(function(require, exports, module) {
         
         /***** Methods *****/
         
-        function onAddUploadJob(job) {
+        function onAddUploadJob(e) {
+            var job = e.job;
             var dir = path.dirname(job.fullPath);
             
             var cleanup = function() {};
@@ -215,7 +216,8 @@ define(function(require, exports, module) {
             });
 
             var initialSelection = JSON.stringify(tree.selection);
-            uploadManager.on("batchDone", function onBatchDone(b) {
+            uploadManager.on("batchDone", function onBatchDone(e) {
+                var b = e.batch;
                 if (b != batch) return;
                 
                 uploadManager.off("batchDone", onBatchDone);
@@ -400,7 +402,8 @@ define(function(require, exports, module) {
         /***** Register and define API *****/
         
         /**
-         * Integrates file upload into the UI
+         * Implements the file upload UI for Cloud9 IDE
+         * @singleton
          **/
         plugin.freezePublicAPI({
             /**
@@ -425,7 +428,7 @@ define(function(require, exports, module) {
             /**
              * Upload files from an file upload input element
              * 
-             * @param {HTMLInputElement} inputEleement the upload input DOM 
+             * @param {HTMLInputElement} inputElement the upload input DOM 
              *   element
              */
             uploadFromInput     : uploadFromInput
