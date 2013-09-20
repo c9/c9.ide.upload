@@ -9,18 +9,15 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             packagePath : "plugins/c9.core/c9",
             startdate   : new Date(),
             debug       : true,
-            smithIo     : "{\"prefix\":\"/smith.io/server\"}",
             staticUrl   : "/static/plugins",
             hosted      : true,
             local       : false
         },
         
         "plugins/c9.core/ext",
-        "plugins/c9.core/events",
         "plugins/c9.core/http",
         "plugins/c9.core/util",
         "plugins/c9.ide.ui/lib_apf",
-        "plugins/c9.nodeapi/nodeapi",
         "plugins/c9.core/settings",
         "plugins/c9.ide.ui/anims",
         {
@@ -38,11 +35,12 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             filesPrefix: "/workspace"
         },
         {
-            packagePath: "plugins/c9.vfs.client/vfs_client",
+            packagePath : "plugins/c9.vfs.client/vfs_client",
             smithIo     : {
-                "prefix": "/smith.io/server"
+                "path": "/smith.io/server"
             }
         },
+        "plugins/c9.vfs.client/endpoint.standalone",
         "plugins/c9.ide.auth/auth",
         {
             packagePath: "plugins/c9.fs/fs",
@@ -52,10 +50,10 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         
         // Mock plugins
         {
-            consumes : ["emitter", "apf", "ui"],
+            consumes : ["apf", "ui"],
             provides : [
                 "commands", "commands", "layout", "watcher", 
-                "save", "panels", "tabManager", "preferences"
+                "save", "panels", "tabManager", "preferences", "clipboard"
             ],
             setup    : expect.html.mocked
         },

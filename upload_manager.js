@@ -17,12 +17,12 @@ define(function(require, module, exports) {
      */
 
     function main(options, imports, register) {
-        var path   = imports.nodeapi.path;
         var fs     = imports.fs;
         var Plugin = imports.Plugin;
         
-        var UploadBatch = require("./batch");
-        var UploadJob   = require("./upload_job");
+        var UploadBatch  = require("./batch");
+        var UploadJob    = require("./upload_job");
+        var path         = require("path");
         
         /***** Initialization *****/
             

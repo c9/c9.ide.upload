@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "util", "ui", "layout", "menus", "fs", "tree",
-        "fs.cache.xml", "upload_manager", "nodeapi"
+        "fs.cache.xml", "upload_manager"
     ];
     main.provides = ["upload"];
     return main;
@@ -15,10 +15,10 @@ define(function(require, exports, module) {
         var menus         = imports.menus;
         var fsCache       = imports["fs.cache.xml"];
         var tree          = imports.tree;
-        var path          = imports.nodeapi.path;
         var uploadManager = imports.upload_manager;
         
-        var css = require("text!./upload.css");
+        var path          = require("path");
+        var css           = require("text!./upload.css");
         
         var winUploadFileExistsMarkup = require("text!./markup/win_upload_file_exists.xml");
         var winUploadFilesMarkup      = require("text!./markup/win_upload_files.xml");

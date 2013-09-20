@@ -9,21 +9,19 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             packagePath : "plugins/c9.core/c9",
             startdate   : new Date(),
             debug       : true,
-            smithIo     : "{\"prefix\":\"/smith.io/server\"}",
             staticUrl   : "/static/plugins",
             hosted      : true,
             local       : false
         },
-
-        "plugins/c9.core/events",
         "plugins/c9.core/ext",
-        "plugins/c9.nodeapi/nodeapi",
+        "plugins/c9.core/http",
         {
             packagePath: "plugins/c9.vfs.client/vfs_client",
             smithIo     : {
-                "prefix": "/smith.io/server"
+                "path": "/smith.io/server"
             }
         },
+        "plugins/c9.vfs.client/endpoint.standalone",
         "plugins/c9.ide.auth/auth",
         {
             packagePath: "plugins/c9.fs/fs",
@@ -35,13 +33,6 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             workerPrefix: "/static/plugins/c9.ide.upload"
         },
         
-        // Mock plugins
-        {
-            consumes : [],
-            provides : ["http"],
-            setup    : function(options, imports, register) { register(null, {http: {}}); }
-        },
-
         {
             consumes : ["upload_manager", "fs"],
             provides : [],
