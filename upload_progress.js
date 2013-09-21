@@ -1,12 +1,12 @@
 define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "util", "ui", "layout", "tree", "upload_manager", "anims"
+        "Plugin", "util", "ui", "layout", "tree", "upload_manager", "anims"
     ];
     main.provides = ["upload_progress"];
     return main;
     
     function main(options, imports, register) {
-        var Plugin        = imports.plugin;
+        var Plugin        = imports.Plugin;
         var ui            = imports.ui;
         var layout        = imports.layout;
         var tree          = imports.tree;
@@ -135,7 +135,8 @@ define(function(require, exports, module) {
             });
         }
         
-        function onAddUploadJob(job) {
+        function onAddUploadJob(e) {
+            var job = e.job
             show();
             
             var n = apf
@@ -155,7 +156,8 @@ define(function(require, exports, module) {
             updateUploadCount();
         }
         
-        function onRemoveUploadJob(job) {
+        function onRemoveUploadJob(e) {
+            var job = e.job;
             show();
             
             var item = mdlUploadActivity.queryNode("file[@job_id='" + job.id + "']");

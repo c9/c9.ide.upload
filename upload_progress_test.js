@@ -53,7 +53,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             consumes : ["apf", "ui"],
             provides : [
                 "commands", "commands", "layout", "watcher", 
-                "save", "panels", "tabs", "preferences", "clipboard"
+                "save", "panels", "tabManager", "preferences", "clipboard"
             ],
             setup    : expect.html.mocked
         },
