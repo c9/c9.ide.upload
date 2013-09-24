@@ -34,7 +34,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         },
         
         {
-            consumes : ["upload_manager", "fs"],
+            consumes : ["upload.manager", "fs"],
             provides : [],
             setup    : main
         }
@@ -45,7 +45,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
     });
     
     function main(options, imports, register) {
-        var mgr = imports.upload_manager;
+        var mgr = imports["upload.manager"];
         var fs = imports.fs;
         var browserFs;
         var files;

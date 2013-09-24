@@ -1,8 +1,8 @@
 define(function(require, exports, module) {
     main.consumes = [
-        "Plugin", "util", "ui", "layout", "tree", "upload_manager", "anims"
+        "Plugin", "util", "ui", "layout", "tree", "upload.manager", "anims"
     ];
-    main.provides = ["upload_progress"];
+    main.provides = ["upload.progress"];
     return main;
     
     function main(options, imports, register) {
@@ -11,9 +11,9 @@ define(function(require, exports, module) {
         var layout        = imports.layout;
         var tree          = imports.tree;
         var anims         = imports.anims;
-        var uploadManager = imports.upload_manager;
+        var uploadManager = imports["upload.manager"];
         
-       var css            = require("text!./upload_progress.css");
+        var css           = require("text!./upload_progress.css");
         
         var boxUploadActivityMarkup = require("text!./markup/box_upload_activity.xml");
         
@@ -190,6 +190,10 @@ define(function(require, exports, module) {
             showPanel(boxUploadActivity);
         }
         
+        function hide() {
+            hidePanel(boxUploadActivity);
+        }
+        
         /***** Lifecycle *****/
         
         plugin.on("load", function() {
@@ -205,12 +209,29 @@ define(function(require, exports, module) {
         
         /***** Register and define API *****/
         
+        /**
+         * Displays the upload progress in a panel below the tree.
+         * @singleton
+         */
         plugin.freezePublicAPI({
-            show: show
+            /**
+             * Show the upload progress panel
+             */
+            show: show,
+            
+            /**
+             * Hide the upload progress panel
+             */
+            hide: hide,
+            
+            /**
+             * Cancel all running jobs
+             */
+            cancelAll: cancelAll
         });
         
         register(null, {
-            upload_progress: plugin
+            "upload.progress": plugin
         });
     }
 });

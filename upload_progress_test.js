@@ -58,7 +58,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             setup    : expect.html.mocked
         },
         {
-            consumes : ["upload_progress", "upload_manager", "settings"],
+            consumes : ["upload.progress", "upload.manager", "settings"],
             provides : [],
             setup    : main
         }
@@ -69,8 +69,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     });
     
     function main(options, imports, register) {
-        var progress = imports.upload_progress;
-        var uploadManager = imports.upload_manager;
+        var progress = imports["upload.progress"];
+        var uploadManager = imports["upload.manager"];
         
         describe('upload', function() {
             before(function(done){

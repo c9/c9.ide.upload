@@ -2,7 +2,7 @@ define(function(require, module, exports) {
     "use strict";
     
     main.consumes = ["Plugin", "fs"];
-    main.provides = ["upload_manager"];
+    main.provides = ["upload.manager"];
     return main;
 
     /** 
@@ -237,7 +237,7 @@ define(function(require, module, exports) {
         
         /**
          * Object representing the upload of a single file.
-         * @class Job
+         * @class upload.Job
          * @extends Object
          */
         /**
@@ -256,7 +256,7 @@ define(function(require, module, exports) {
          */
         /**
          * The upload manager responsible for this job.
-         * @property {upload_manager} manager
+         * @property {upload.manager} manager
          * @readonly
          */
         /**
@@ -293,7 +293,7 @@ define(function(require, module, exports) {
          */
         /**
          * Object representing the upload of a set of files or folders.
-         * @class Batch
+         * @class upload.Batch
          * @extends Object
          */
         /**
@@ -303,34 +303,45 @@ define(function(require, module, exports) {
          * @singleton
          */
         plugin.freezePublicAPI({
+            /**
+             * Specifies whether the browser supports folder uploads
+             * @property {Boolean} SUPPORT_FOLDER_UPLOAD
+             * @readonly
+             */
+            SUPPORT_FOLDER_UPLOAD: UploadBatch.SUPPORT_FOLDER_UPLOAD,
+            
+            /**
+             * Array of all active upload jobs
+             * @property {Job[]} jobs
+             * @readonly
+             */
+            get jobs() { return jobs; },
+            
             _events : [
                 /** 
                  * Fires when an upload is started. Passes a Job instance
                  * @event addJob
                  * @param {Object} e
-                 * @param {Job} e.job
+                 * @param {upload.Job} e.job
                  */
+                "addJob",
                 /**
                  * Fires when a job has finished uploading of faild to
                  *   upload. Passes the Job object
                  * @event removeJob 
                  * @param {Object} e
-                 * @param {Job} e.job 
+                 * @param {upload.Job} e.job 
                  */
+                "removeJob",
                 /**
                  * Fires when all files of an upload batch are uploaded
                  *   Passes the batch object.
                  * @event batchDone
                  * @param {Object} e
-                 * @param {Batch} e.batch  
+                 * @param {upload.Batch} e.batch  
                  */
+                "batchDone"
             ],
-            
-            /**
-             * Specifies whether the browser supports folder uploads
-             * @property {Boolean} SUPPORT_FOLDER_UPLOAD
-             */
-            SUPPORT_FOLDER_UPLOAD: UploadBatch.SUPPORT_FOLDER_UPLOAD,
             
             /**
              * Checks whether file upload API is supported
@@ -340,17 +351,11 @@ define(function(require, module, exports) {
             isSupported: isSupported,
             
             /**
-             * Array of all active upload jobs
-             * @property {Job[]} jobs
-             */
-            get jobs() { return jobs; },
-            
-            /**
              * Uploads a batch of files to the server.
              * 
              * @param {String} targetPath Path on the server where to store
              *   the files
-             * @param {Batch} batch the batch of files to upload
+             * @param {upload.Batch} batch the batch of files to upload
              * @param dialog {function()}
              * @param {Function} callback The callback is called when all
              *   file uploads have been scheduled. It will not wait for the
@@ -363,7 +368,7 @@ define(function(require, module, exports) {
              * 
              * @param {File} file The file object from the file HTML5 API
              * @param {String} fullPath Target path of the file
-             * @returns {Job} the upload job to track the upload
+             * @returns {upload.Job} the upload job to track the upload
              */
             uploadFile: uploadFile,
             
@@ -374,7 +379,7 @@ define(function(require, module, exports) {
              * @param {HTMLInputElement} inputEl The file upload input 
              *   element.
              * @param {Function} callback Callback returns the Batch object
-             * @return {Batch}
+             * @return {upload.Batch}
              */
             batchFromInput: batchFromInput,
             
@@ -384,7 +389,7 @@ define(function(require, module, exports) {
              * 
              * @param {DragEvent} dropEvent native DOM drop event
              * @param {Function} callback Callback returns the Batch object
-             * @return {Batch}
+             * @return {upload.Batch}
              */
             batchFromDrop: batchFromDrop,
             
@@ -395,7 +400,7 @@ define(function(require, module, exports) {
              * 
              * @param {Object} entries HTML5 file API entries
              * @param {Function} callback Callback returns the Batch object
-             * @return {Batch}
+             * @return {upload.Batch}
              */
             batchFromFileApi: batchFromFileApi,
             
@@ -403,14 +408,14 @@ define(function(require, module, exports) {
              * Find an upload job by its ID
              * 
              * @param {Number} id The job id 
-             * @return {Job} the associated job
+             * @return {upload.Job} the associated job
              */
             jobById: jobById,
         });
         
         
         register(null, {
-            "upload_manager": plugin
+            "upload.manager": plugin
         });
     }
 });
