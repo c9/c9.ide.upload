@@ -56,12 +56,18 @@ define(function(require, exports, module) {
             dropbox.addEventListener("dragleave", dragLeave, false);
             dropbox.addEventListener("drop", dragDrop, false);
             dropbox.addEventListener("dragover", noopHandler, false);
-        }        
+        }
+        
+        function isFile(e) {
+            var types = e.dataTransfer.types;
+            if (types && Array.prototype.indexOf.call(types, 'Files') !== -1)
+                return true;
+        }
         
         /***** Methods *****/
         
         function dragLeave(e) {
-            if (this.disableDropbox)
+            if (this.disableDropbox || !isFile(e))
                 return;
 
             apf.stopEvent(e);
@@ -69,7 +75,7 @@ define(function(require, exports, module) {
         }
 
         function dragEnter(e) {
-            if (this.disableDropbox)
+            if (this.disableDropbox || !isFile(e))
                 return;
 
             apf.stopEvent(e);
@@ -78,7 +84,7 @@ define(function(require, exports, module) {
 
         function dragDrop(e) {
             dragLeave.call(this, e);
-            if (this.disableDropbox)
+            if (this.disableDropbox || !isFile(e))
                 return;
 
             return upload.uploadFromDrop(e);
