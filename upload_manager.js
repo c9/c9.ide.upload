@@ -289,7 +289,7 @@ define(function(require, module, exports) {
          * Fires when the progress of the file upload changes.
          * @event progress
          * @param {Object} e
-         * @param {Number} e.progress  The progress of the job. See also {@link #progress}
+         * @param {Number} e.progress  The progress of the job. See also {@link upload.Job#property-progress}
          */
         /**
          * Object representing the upload of a set of files or folders.
@@ -312,7 +312,7 @@ define(function(require, module, exports) {
             
             /**
              * Array of all active upload jobs
-             * @property {Job[]} jobs
+             * @property {upload.Job[]} jobs
              * @readonly
              */
             get jobs() { return jobs; },
