@@ -34,13 +34,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             packagePath: "plugins/c9.ide.upload/upload_manager",
             filesPrefix: "/workspace"
         },
-        {
-            packagePath : "plugins/c9.vfs.client/vfs_client",
-            smithIo     : {
-                "path": "/smith.io/server"
-            }
-        },
-        "plugins/c9.vfs.client/endpoint.standalone",
+        "plugins/c9.vfs.client/vfs_client",
+        "plugins/c9.vfs.client/endpoint",
         "plugins/c9.ide.auth/auth",
         {
             packagePath: "plugins/c9.fs/fs",

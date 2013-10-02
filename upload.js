@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "util", "ui", "layout", "menus", "fs", "tree",
-        "fs.cache.xml", "upload.manager", "apf"
+        "fs.cache", "upload.manager", "apf"
     ];
     main.provides = ["upload"];
     return main;
@@ -13,7 +13,7 @@ define(function(require, exports, module) {
         var Plugin        = imports.Plugin;
         var ui            = imports.ui;
         var menus         = imports.menus;
-        var fsCache       = imports["fs.cache.xml"];
+        var fsCache       = imports["fs.cache"];
         var tree          = imports.tree;
         var uploadManager = imports["upload.manager"];
         var apf           = imports.apf;
