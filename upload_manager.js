@@ -326,7 +326,7 @@ define(function(require, module, exports) {
                  */
                 "addJob",
                 /**
-                 * Fires when a job has finished uploading of faild to
+                 * Fires when a job has finished uploading of failed to
                  *   upload. Passes the Job object
                  * @event removeJob 
                  * @param {Object} e
@@ -374,7 +374,7 @@ define(function(require, module, exports) {
             
             /**
              * Extract the batch of files to upload from a file upload
-             * inpuit element.
+             * input element.
              * 
              * @param {HTMLInputElement} inputEl The file upload input 
              *   element.
@@ -396,7 +396,6 @@ define(function(require, module, exports) {
             /**
              * Extract the batch of files to upload from a HTML5 FILE API 
              * directory entry.
-             * drop event.
              * 
              * @param {Object} entries HTML5 file API entries
              * @param {Function} callback Callback returns the Batch object
