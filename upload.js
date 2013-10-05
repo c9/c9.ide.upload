@@ -2,8 +2,8 @@ define(function(require, exports, module) {
     "use strict";
     
     main.consumes = [
-        "Plugin", "util", "ui", "layout", "menus", "fs", "tree",
-        "fs.cache", "upload.manager", "apf"
+        "Plugin", "util", "ui", "layout", "menus", "fs", "tree", "fs.cache", 
+        "upload.manager", "apf", "dialog.fileoverwrite", "dialog.alert"
     ];
     main.provides = ["upload"];
     return main;
@@ -16,12 +16,13 @@ define(function(require, exports, module) {
         var fsCache       = imports["fs.cache"];
         var tree          = imports.tree;
         var uploadManager = imports["upload.manager"];
+        var question      = imports["dialog.fileoverwrite"].show;
+        var alert         = imports["dialog.alert"].show;
         var apf           = imports.apf;
         
         var path          = require("path");
         var css           = require("text!./upload.css");
         
-        var winUploadFileExistsMarkup = require("text!./markup/win_upload_file_exists.xml");
         var winUploadFilesMarkup      = require("text!./markup/win_upload_files.xml");
         
         /***** Initialization *****/
@@ -148,12 +149,11 @@ define(function(require, exports, module) {
             uploadManager.batchFromDrop(dropEvent, function(err, batch, skipped) {
                 if (err) return onUploadError(err);
                 if (Object.keys(skipped).length) {
-                    util.alert(
+                    alert(
                         "File upload",
                         "Not all files can be uploaded:",
-                        ""
+                        Object.keys(skipped).map(util.escapeXml).join("</br>")
                     );
-                    winAlertMsg.$ext.innerHTML = Object.keys(skipped).map(util.escapeXml).join("</br>");
                 }
                 uploadBatch(batch, targetPath);
             });
@@ -167,7 +167,7 @@ define(function(require, exports, module) {
         function uploadBatch(batch, targetPath) {
             // 1. has directories
             if (batch.hasDirectories()) {
-                util.alert(
+                alert(
                     "Folder Upload",
                     "Folder uploads are currently only supported by Google Chrome.",
                     "If you want to upload folders you need to run a current version of Google Chrome."
@@ -184,7 +184,7 @@ define(function(require, exports, module) {
             
             // 3. check file count
             if (sizes.count > MAX_FILE_COUNT) {
-                util.alert(
+                alert(
                     "Too many files",
                     "File uploads are limited to " + MAX_FILE_COUNT + " files per upload.",
                     "Please upload files in smaller batches"
@@ -194,7 +194,7 @@ define(function(require, exports, module) {
             
             // 4. check total size quota
             if (sizes.sum > MAX_UPLOAD_SIZE) {
-                util.alert(
+                alert(
                     "Maximum upload-size exceeded",
                     "File uploads are limited to " + Math.floor(MAX_UPLOAD_SIZE / 1000 / 1000) + "MB in total.",
                     ""
@@ -287,62 +287,25 @@ define(function(require, exports, module) {
         }
     
         function fileExistsDialog(batch, path, root, callback) {
-            if (!winUploadFileExists) {
-                ui.insertMarkup(null, winUploadFileExistsMarkup, plugin);
-                winUploadFileExists = plugin.getElement("winUploadFileExists");
-            }
-
-            var overwriteAll = plugin.getElement("btnUploadOverwriteAll");
-            var skipAll      = plugin.getElement("btnUploadSkipAll");
-            var overwrite    = plugin.getElement("btnUploadOverwrite");
-            var skip         = plugin.getElement("btnUploadSkip");
-            
-            if (batch.files.length > 1) {
-                overwriteAll.show();
-                skipAll.show();
-            }
-            else {
-                overwriteAll.hide();
-                skipAll.hide();
-            }
-            
-            plugin.getElement("uploadFileExistsMsg").$ext.textContent = 
-                "\"" + root + "\" already exists, do you want to replace it? Replacing it will overwrite its current contents.";
-
-            winUploadFileExists.show();
-            
-            function oa(e) {
-                done("replace", true);
-            }
-            function sa(e) {
-                done("stop", true);
-            }
-            function o(e) {
-                done("replace", false);
-            }
-            function s(e) {
-                done("no-replace", false);
-            }
-            overwriteAll.on("click", oa);
-            skipAll.on("click", sa);
-            overwrite.on("click", o);
-            skip.on("click", s);
-            
-            function done(action, toAll) {
-                winUploadFileExists.hide();
-                
-                overwriteAll.off("click", oa);
-                skipAll.off("click", sa);
-                overwrite.off("click", o);
-                skip.off("click", s);
-                
-                callback(action, toAll);
-            }
+            question(
+                "File already exists",
+                "File already exists",
+                '"' + root + '" already exists, do you want to replace it? '
+                    + "Replacing it will overwrite its current contents.",
+                function(all){ // Overwrite
+                    callback("replace", all);
+                },
+                function(all){ // Skip
+                    if (all) callback("stop", true);
+                    else callback("no-replace", false);
+                },
+                { all: batch.files.length > 1 }
+            );
         }
     
         function onShow (){
             if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
-                util.alert("The File APIs are not fully supported in this browser.");
+                alert("The File APIs are not fully supported in this browser.");
                 return hideUploadWindow();
             }
     
@@ -421,6 +384,7 @@ define(function(require, exports, module) {
             /**
              * Display the file exists dialog.
              * Only used for unit testing
+             * @ignore
              */
             fileExistsDialog    : fileExistsDialog,
             
