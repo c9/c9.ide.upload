@@ -33,7 +33,7 @@ define(function(require, exports, module) {
                 uploadDropArea.addEventListener("dragover", noopHandler, false);
             });
             
-            tree.getElement("trFiles", function(trFiles) {
+            tree.getElement("container", function(trFiles) {
                 var el = trFiles.$ext;
                 document.body.addEventListener("dragenter", treeDragEnter, false);
                 document.body.addEventListener("dragleave", treeDragLeave, false);

@@ -56,7 +56,7 @@ define(function(require, exports, module) {
             tree.getElement("mnuCtxTree", function(mnuCtxTree){
                 menus.addItemToMenu(mnuCtxTree, new ui.item({
                     id      : "mnuCtxTreeUpload",
-                    match   : "[folder]",
+                    match   : "folder|file|project",
                     caption : "Upload",
                     onclick : showUploadWindow
                 }), 420, plugin);
