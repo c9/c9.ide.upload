@@ -213,7 +213,7 @@ define(function(require, exports, module) {
             }
             else {
                 targetFolder = getTargetFolder();
-                targetPath = targetFolder.getAttribute("path");
+                targetPath = targetFolder.path;
             }
             
             tree.expand(targetFolder, function() {
@@ -355,20 +355,12 @@ define(function(require, exports, module) {
         }
     
         function getTargetFolder() {
-            var node = fsCache.findNode(tree.selected);
-            
-            var target;
-            if (node)
-                target = node.localName == "file" ? node.parentNode : node;
-            else 
-                target = fsCache.findNode("/");
-    
-            return target;
+            return tree.getSelectedFolder();
         }
         
         function updateTargetFolder() {
             plugin.getElement("uplTargetFolder").$ext.textContent 
-                = getTargetFolder().getAttribute("path");
+                = getTargetFolder().path;
         }
         
         // add file to file tree
