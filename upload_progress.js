@@ -54,15 +54,15 @@ define(function(require, exports, module) {
         
             boxUploadActivity = plugin.getElement("boxUploadActivity");
         
-            tree.getElement("trFiles", function(trFiles){
-                var p = trFiles.parentNode;
+            tree.getElement("container", function(treeContainer){
+                var p = treeContainer.parentNode;
                 var box = new ui.vsplitbox({
                     id       : "vboxTreeContainer",
                     anchors  : "0 0 0 0",
                     splitter : false
                 });
-                p.insertBefore(box, trFiles);
-                box.appendChild(trFiles);
+                p.insertBefore(box, treeContainer);
+                box.appendChild(treeContainer);
                 box.appendChild(boxUploadActivity);
             });
             

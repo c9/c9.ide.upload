@@ -177,7 +177,8 @@ define(function(require, exports, module) {
 
             // 2. filter DS_Store
             batch.ignoreFiles({
-                ".DS_Store": 1
+                ".DS_Store": 1,
+                "Thumbs.db": 1
             });
             
             var sizes = batch.getSizes();
@@ -324,26 +325,6 @@ define(function(require, exports, module) {
         function updateTargetFolder() {
             plugin.getElement("uplTargetFolder").$ext.textContent 
                 = getTargetFolder().path;
-        }
-        
-        // add file to file tree
-        function addToFileTree(file) {
-            var filename = apf.escapeXML(file.name);
-            var path = apf.escapeXML(file.path) + "/" + filename;
-    
-            var treeNode = trFiles.queryNode(
-                "//file[@path=" + util.escapeXpathString(path) + "]"
-            );
-            if (treeNode)
-                apf.xmldb.removeNode(treeNode);
-    
-            var xmlNode = apf.n("<file />")
-                .attr("type", "fileupload")
-                .attr("name", filename)
-                .attr("path", path)
-                .node();
-    
-            file.treeNode = apf.xmldb.appendChild(file.targetFolder, xmlNode);
         }
             
         /***** Lifecycle *****/

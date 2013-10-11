@@ -46,7 +46,8 @@ define(function(require, module, exports) {
             loaded = true;
             
             jobs               = [];
-            filesPrefix        = options.filesPrefix;
+            filesPrefix        = options.filesPrefix || "/workspace";
+            console.warn("options.filesPrefix is missing", options.filesPrefix)
             concurrentUploads  = options.concurrentUploads || 6;
         }
         
@@ -128,18 +129,18 @@ define(function(require, module, exports) {
         };
         
         function _createJob(file, fullPath) {
-            return new UploadJob(file, fullPath, this, options.workerPrefix);
+            return new UploadJob(file, fullPath, plugin, options.workerPrefix);
         };
         
         function uploadFile(file, fullPath) {
             var job = _createJob(file, fullPath);
-            job.on("changeState", _check.bind(this));
+            job.on("changeState", _check);
             
             jobs.push(job);
             emit("addJob", { job: job });
             
             // give caller a chance to attach event listeners
-            setTimeout(_check.bind(this), 0);
+            setTimeout(_check, 0);
             return job;
         };
 
@@ -316,6 +317,11 @@ define(function(require, module, exports) {
              * @readonly
              */
             get jobs() { return jobs; },
+            
+            /**
+             * @ignore
+             */
+            get filesPrefix() { return filesPrefix; },
             
             _events : [
                 /** 

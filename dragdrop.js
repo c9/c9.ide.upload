@@ -33,8 +33,8 @@ define(function(require, exports, module) {
                 uploadDropArea.addEventListener("dragover", noopHandler, false);
             });
             
-            tree.getElement("container", function(trFiles) {
-                var el = trFiles.$ext;
+            tree.getElement("container", function(container) {
+                var el = container.$ext;
                 document.body.addEventListener("dragenter", treeDragEnter, false);
                 document.body.addEventListener("dragleave", treeDragLeave, false);
                 document.body.addEventListener("dragover", treeDragOver, true);
@@ -124,7 +124,7 @@ define(function(require, exports, module) {
             if (this.disableDropbox)
                 return;
             
-            var treeEl = tree.getElement("trFiles").$ext;
+            var treeEl = tree.getElement("container").$ext;
             if (isChildOf(treeEl, e.target))
                 startTreeDrag();
             else

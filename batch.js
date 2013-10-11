@@ -129,26 +129,26 @@ Batch.fromInput = function(inputEl, callback) {
 
 Batch.fromFileApi = function(entries, callback) {
     var files = [];
-	var skipped = {};
+    var skipped = {};
     
     forEach(entries, function(entry, next) {
         walkFiles(entry, function(entry, next) {
             // ignore directories
             if (entry.isDirectory)
                 return next();
-                
+
             entry.file(function(file) {
                 file.fullPath = entry.fullPath;
                 file.isFile = true;
                 files.push(file);
                 next();
             }, function(err) {
-				skipped[entry.fullPath] = err;
-				next();
-			});
+                skipped[entry.fullPath] = err;
+                next();
+            });
         }, function(err) {
-			next();
-		});
+            next();
+        });
     }, function(err) {
         if (err) return callback(err);
         callback(null, new Batch(files), skipped);
@@ -177,6 +177,9 @@ Batch.fromDrop = function(dropEvent, callback) {
 };
 
 function walkFiles(entry, onEntry, callback) {
+    if (!entry) {
+        return callback();
+    }
     if (entry.isFile) {
         onEntry(entry, callback);
     } 
