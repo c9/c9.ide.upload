@@ -60,6 +60,7 @@ UploadJob.prototype._startUpload = function() {
         return job.vfs.rest(job.fullPath, {
             method: "put", 
             body: job.file,
+            isFile: true,
             progress: function(loaded, total) {
                 job._progress(loaded / total);
             }
