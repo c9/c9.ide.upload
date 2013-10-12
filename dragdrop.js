@@ -97,27 +97,26 @@ define(function(require, exports, module) {
             
             tree.dragMode = true;
             dragContext = {};
-            tree.on("folderDragEnter", folderDragEnter);
-            tree.on("folderDragLeave", folderDragLeave);
+            tree.tree.on("folderDragEnter", folderDragEnter);
+            tree.tree.on("folderDragLeave", folderDragLeave);
         }
         
         function stopTreeDrag() {
             if (!tree.dragMode) return;
             
             tree.dragMode = false;
-            tree.off("folderDragEnter", folderDragEnter);
-            tree.off("folderDragLeave", folderDragLeave);
+            tree.tree.off("folderDragEnter", folderDragEnter);
+            tree.tree.off("folderDragLeave", folderDragLeave);
         }
 
         function folderDragLeave(path) {
-            var html = tree.getHtmlNode(path);
-            apf.setStyleClass(html, null, ["dragAppendUpload"]);
+            tree.tree.provider.setClass(dragInfo.hoverNode, "dragAppendUpload", false);
+            dragContext.path = null;
         }
         
-        function folderDragEnter(path) {
-            var html = tree.getHtmlNode(path);
-            apf.setStyleClass(html, "dragAppendUpload");
-            dragContext.path = path;
+        function folderDragEnter(node) {
+            tree.tree.provider.setClass(dragInfo.hoverNode, "dragAppendUpload", true);
+            dragContext.path = node.path;
         }
         
         function treeDragEnter(e) {
