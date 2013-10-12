@@ -15,6 +15,9 @@ define(function(require, exports, module) {
         
         var css      = require("text!./dragdrop.css");
         
+        // TODO move all this into the tree
+        var treeMouseHandler; 
+        
         /***** Initialization *****/
         
         var plugin = new Plugin("Ajax.org", main.consumes);
@@ -40,6 +43,7 @@ define(function(require, exports, module) {
                 document.body.addEventListener("dragover", treeDragOver, true);
                 el.addEventListener("drop", treeDragDrop, false);
                 el.addEventListener("dragover", noopHandler, false);
+                treeMouseHandler = tree.tree.$mouseHandler;
             });
             
             var holder = layout.findParent(plugin).$ext;
@@ -92,42 +96,44 @@ define(function(require, exports, module) {
 
         var dragContext = {};
         
-        function startTreeDrag() {
-            if (tree.dragMode) return;
+        function startTreeDrag(e) {
+            if (treeMouseHandler.releaseMouse) return;
             
-            tree.dragMode = true;
+            treeMouseHandler.captureMouse(e);
+            treeMouseHandler.setState("drag");
+            treeMouseHandler.dragStart();
             dragContext = {};
             tree.tree.on("folderDragEnter", folderDragEnter);
             tree.tree.on("folderDragLeave", folderDragLeave);
         }
         
-        function stopTreeDrag() {
-            if (!tree.dragMode) return;
+        function stopTreeDrag(e) {
+            if (!treeMouseHandler.releaseMouse) return;
             
-            tree.dragMode = false;
+            treeMouseHandler.releaseMouse(e);
             tree.tree.off("folderDragEnter", folderDragEnter);
             tree.tree.off("folderDragLeave", folderDragLeave);
         }
 
-        function folderDragLeave(path) {
-            tree.tree.provider.setClass(dragInfo.hoverNode, "dragAppendUpload", false);
+        function folderDragLeave(node) {
+            tree.tree.provider.setClass(node, "dragAppendUpload", false);
             dragContext.path = null;
         }
         
         function folderDragEnter(node) {
-            tree.tree.provider.setClass(dragInfo.hoverNode, "dragAppendUpload", true);
+            tree.tree.provider.setClass(node, "dragAppendUpload", true);
             dragContext.path = node.path;
         }
         
         function treeDragEnter(e) {
-            if (this.disableDropbox)
+            if (this.disableDropbox || !isFile(e))
                 return;
             
             var treeEl = tree.getElement("container").$ext;
             if (isChildOf(treeEl, e.target))
-                startTreeDrag();
+                startTreeDrag(e);
             else
-                stopTreeDrag();
+                stopTreeDrag(e);
                 
             clearTimeout(dragContext.timer);
             apf.stopEvent(e);
@@ -142,15 +148,12 @@ define(function(require, exports, module) {
         }
         
         function treeDragOver(e) {
-            // apparently there is no proper way to detect if a drag stopped
-            clearTimeout(dragContext.timer);
-            dragContext.timer = setTimeout(function() {
-                stopTreeDrag();
-            }, 1000);
+            if (treeMouseHandler.$onCaptureMouseMove)
+                treeMouseHandler.$onCaptureMouseMove(e);
         }
         
         function treeDragDrop(e) {
-            stopTreeDrag();
+            stopTreeDrag(e);
             if (this.disableDropbox)
                 return;
 
