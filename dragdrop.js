@@ -153,12 +153,13 @@ define(function(require, exports, module) {
         }
         
         function treeDragDrop(e) {
+            var path = dragContext.path;
+            apf.stopEvent(e);
             stopTreeDrag(e);
             if (this.disableDropbox)
                 return;
 
-            apf.stopEvent(e);
-            return upload.uploadFromDrop(e, dragContext.path);
+            return upload.uploadFromDrop(e, path);
         }
         
         function noopHandler(e) {
