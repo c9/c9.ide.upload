@@ -56,6 +56,22 @@ UploadJob.prototype._progress = function(progress) {
 
 UploadJob.prototype._startUpload = function() {
     var job = this;
+    if (job.vfs) {
+        return job.vfs.rest(job.fullPath, {
+            method: "put", 
+            body: job.file,
+            progress: function(loaded, total) {
+                job._progress(loaded / total);
+            }
+        }, function(err, data, res) {
+            job._progress(1);
+            if (err)
+                job._error(err.status, err.message);
+            else
+                job._setState("done");
+        });
+    }
+    
     job._setState(STATE_UPLOADING);
                     
     var url = path.join(job.manager.filesPrefix, job.fullPath);

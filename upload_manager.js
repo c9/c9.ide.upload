@@ -1,7 +1,7 @@
 define(function(require, module, exports) {
     "use strict";
     
-    main.consumes = ["Plugin", "fs"];
+    main.consumes = ["Plugin", "fs", "vfs"];
     main.provides = ["upload.manager"];
     return main;
 
@@ -18,6 +18,7 @@ define(function(require, module, exports) {
 
     function main(options, imports, register) {
         var fs     = imports.fs;
+        var vfs    = imports.vfs;
         var Plugin = imports.Plugin;
         
         var UploadBatch  = require("./batch");
@@ -38,7 +39,7 @@ define(function(require, module, exports) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
 
-        var jobs, filesPrefix, concurrentUploads
+        var jobs, concurrentUploads
 
         var loaded = false;
         function load(){
@@ -46,8 +47,6 @@ define(function(require, module, exports) {
             loaded = true;
             
             jobs               = [];
-            filesPrefix        = options.filesPrefix || "/workspace";
-            console.warn("options.filesPrefix is missing", options.filesPrefix)
             concurrentUploads  = options.concurrentUploads || 6;
         }
         
@@ -129,7 +128,9 @@ define(function(require, module, exports) {
         };
         
         function _createJob(file, fullPath) {
-            return new UploadJob(file, fullPath, plugin, options.workerPrefix);
+            var job = new UploadJob(file, fullPath, plugin, options.workerPrefix);
+            job.vfs = vfs;
+            return job;
         };
         
         function uploadFile(file, fullPath) {
@@ -317,11 +318,6 @@ define(function(require, module, exports) {
              * @readonly
              */
             get jobs() { return jobs; },
-            
-            /**
-             * @ignore
-             */
-            get filesPrefix() { return filesPrefix; },
             
             _events : [
                 /** 
