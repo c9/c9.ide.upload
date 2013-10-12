@@ -105,14 +105,16 @@ define(function(require, exports, module) {
             dragContext = {};
             tree.tree.on("folderDragEnter", folderDragEnter);
             tree.tree.on("folderDragLeave", folderDragLeave);
+            window.addEventListener("mousemove", stopTreeDrag, true);
         }
         
         function stopTreeDrag(e) {
             if (!treeMouseHandler.releaseMouse) return;
             
-            treeMouseHandler.releaseMouse(e);
+            treeMouseHandler.releaseMouse(e || {});
             tree.tree.off("folderDragEnter", folderDragEnter);
             tree.tree.off("folderDragLeave", folderDragLeave);
+            window.removeEventListener("mousemove", stopTreeDrag, true)
         }
 
         function folderDragLeave(node) {
@@ -144,12 +146,15 @@ define(function(require, exports, module) {
                 return;
                 
             clearTimeout(dragContext.timer);
+            dragContext.timer = setTimeout(stopTreeDrag, 100);
             apf.stopEvent(e);
         }
         
         function treeDragOver(e) {
             if (treeMouseHandler.$onCaptureMouseMove)
                 treeMouseHandler.$onCaptureMouseMove(e);
+            if (dragContext.timer)
+                dragContext.timer = clearTimeout(dragContext.timer);
         }
         
         function treeDragDrop(e) {
