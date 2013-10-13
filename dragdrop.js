@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
     main.consumes = [
-        "Plugin", "upload", "tree", "ui", "layout"
+        "Plugin", "upload", "tree", "ui", "layout", "c9"
     ];
 
     main.provides = ["dragdrop"];
@@ -12,6 +12,7 @@ define(function(require, exports, module) {
         var tree     = imports.tree;
         var ui       = imports.ui;
         var layout   = imports.layout;
+        var c9       = imports.c9;
         
         var css      = require("text!./dragdrop.css");
         
@@ -56,12 +57,7 @@ define(function(require, exports, module) {
             if (!host)
                 return;
             // TODO open tree panel when hoverng over the button
-
-            if (host === tree.getElement("container"))
-                startTreeDrag(e);
-            else
-                stopTreeDrag(e);
-                
+            updateTreeDrag(e, host);
             updateUploadAreaDrag(host);
             updateTabDrag(host);
                 
@@ -97,7 +93,7 @@ define(function(require, exports, module) {
         }
         
         function clearDrag(e) {
-            stopTreeDrag(e);
+            updateTreeDrag(e);
             updateTabDrag();
             updateUploadAreaDrag();
         }
@@ -163,27 +159,27 @@ define(function(require, exports, module) {
         }
 
         // tree
-        function startTreeDrag(e) {
+        function updateTreeDrag(e, host) {
             if (!treeMouseHandler)
                 treeMouseHandler = tree.tree.$mouseHandler;
-            if (treeMouseHandler.releaseMouse) return;
             
-            treeMouseHandler.captureMouse(e);
-            treeMouseHandler.setState("drag");
-            treeMouseHandler.dragStart();
-            dragContext = {};
-            tree.tree.on("folderDragEnter", folderDragEnter);
-            tree.tree.on("folderDragLeave", folderDragLeave);
-            window.addEventListener("mousemove", stopTreeDrag, true);
-        }
-        
-        function stopTreeDrag(e) {
-            if (!treeMouseHandler || !treeMouseHandler.releaseMouse) return;
-            
-            treeMouseHandler.releaseMouse(e || {});
-            tree.tree.off("folderDragEnter", folderDragEnter);
-            tree.tree.off("folderDragLeave", folderDragLeave);
-            window.removeEventListener("mousemove", stopTreeDrag, true)
+            var online = c9.status & c9.STORAGE;
+            if (online && host === tree.getElement("container")) {
+                if (!treeMouseHandler.releaseMouse) {
+                    treeMouseHandler.captureMouse(e);
+                    treeMouseHandler.setState("drag");
+                    treeMouseHandler.dragStart();
+                    dragContext = {};
+                    tree.tree.on("folderDragEnter", folderDragEnter);
+                    tree.tree.on("folderDragLeave", folderDragLeave);
+                    window.addEventListener("mousemove", updateTreeDrag, true);
+                }
+            } else if (treeMouseHandler && treeMouseHandler.releaseMouse) {
+                treeMouseHandler.releaseMouse(e || {});
+                tree.tree.off("folderDragEnter", folderDragEnter);
+                tree.tree.off("folderDragLeave", folderDragLeave);
+                window.removeEventListener("mousemove", updateTreeDrag, true)
+            }
         }
 
         function folderDragLeave(node) {
