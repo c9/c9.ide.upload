@@ -54,9 +54,6 @@ define(function(require, exports, module) {
             if (this.disableDropbox || !isFile(e))
                 return;
             var host = findHost(e.target);
-            if (!host)
-                return;
-            
             if (!dragContext.mouseListener)
                 window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
@@ -83,19 +80,17 @@ define(function(require, exports, module) {
                 treeMouseHandler.$onCaptureMouseMove(e);
             if (dragContext.timer)
                 dragContext.timer = clearTimeout(dragContext.timer);
-            
-            console.log(dragContext.path);
         }
         
         function dragDrop(e) {
             apf.preventDefault(e);
-            var path = dragContext.path || dragContext.pane;
-            clearDrag(e);
+            setTimeout(clearDrag);
             if (this.disableDropbox)
                 return;
-console.log(dragContext.path, path);
-            if (path)
-                upload.uploadFromDrop(e, path);
+
+            var target = dragContext.path || dragContext.pane;
+            if (target)
+                upload.uploadFromDrop(e, target);
             apf.stopEvent(e);
         }
         
@@ -186,9 +181,12 @@ console.log(dragContext.path, path);
                     tree.tree.on("folderDragLeave", folderDragLeave);
                 }
             } else if (treeMouseHandler && treeMouseHandler.releaseMouse) {
+                var path = dragContext.path;
                 treeMouseHandler.releaseMouse(e || {});
                 tree.tree.off("folderDragEnter", folderDragEnter);
                 tree.tree.off("folderDragLeave", folderDragLeave);
+                // do not reset path if called from mouseup
+                dragContext.path = path;
             }
         }
 
