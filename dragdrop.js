@@ -53,6 +53,7 @@ define(function(require, exports, module) {
             apf.preventDefault(e)
             if (this.disableDropbox || !isFile(e))
                 return;
+            e.dataTransfer.dropEffect = "copy";
             var host = findHost(e.target);
             if (!dragContext.mouseListener)
                 window.addEventListener("mousemove", clearDrag, true);
@@ -75,11 +76,13 @@ define(function(require, exports, module) {
         
         function dragOver(e) {
             apf.preventDefault(e);
-            
+            if (this.disableDropbox || !isFile(e))
+                return;
             if (treeMouseHandler && treeMouseHandler.$onCaptureMouseMove)
                 treeMouseHandler.$onCaptureMouseMove(e);
             if (dragContext.timer)
                 dragContext.timer = clearTimeout(dragContext.timer);
+            e.dataTransfer.dropEffect = "copy";
         }
         
         function dragDrop(e) {

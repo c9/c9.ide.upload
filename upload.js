@@ -150,7 +150,7 @@ define(function(require, exports, module) {
         function uploadFromDrop(dropEvent, targetPath) {
             uploadManager.batchFromDrop(dropEvent, function(err, batch, skipped) {
                 if (err) return onUploadError(err);
-                if (Object.keys(skipped).length) {
+                if (skipped && Object.keys(skipped).length) {
                     alert(
                         "File upload",
                         "Not all files can be uploaded:",
