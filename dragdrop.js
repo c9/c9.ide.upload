@@ -31,18 +31,18 @@ define(function(require, exports, module) {
             
             ui.insertCss(css, plugin);
             
-            window.addEventListener("dragenter", dragEnter, false);
-            window.addEventListener("dragleave", dragLeave, false);
-            window.addEventListener("dragover", dragOver, true);
-            window.addEventListener("drop", dragDrop, false);
+            document.addEventListener("dragenter", dragEnter, true);
+            document.addEventListener("dragleave", dragLeave, true);
+            document.addEventListener("dragover", dragOver, true);
+            document.addEventListener("drop", dragDrop, true);
         }
         
         function unload() {
             loaded = false;
-            window.removeEventListener("dragenter", dragEnter, false);
-            window.removeEventListener("dragleave", dragLeave, false);
-            window.removeEventListener("dragover", dragOver, true);
-            window.removeEventListener("drop", dragDrop, false);
+            document.removeEventListener("dragenter", dragEnter, true);
+            document.removeEventListener("dragleave", dragLeave, true);
+            document.removeEventListener("dragover", dragOver, true);
+            document.removeEventListener("drop", dragDrop, true);
         }
         
         /***** Methods *****/
@@ -53,7 +53,7 @@ define(function(require, exports, module) {
             apf.preventDefault(e)
             if (this.disableDropbox || !isFile(e))
                 return;
-            var host = apf.findHost(e.target);
+            var host = findHost(e.target);
             if (!host)
                 return;
             
@@ -83,6 +83,8 @@ define(function(require, exports, module) {
                 treeMouseHandler.$onCaptureMouseMove(e);
             if (dragContext.timer)
                 dragContext.timer = clearTimeout(dragContext.timer);
+            
+            console.log(dragContext.path);
         }
         
         function dragDrop(e) {
@@ -91,8 +93,10 @@ define(function(require, exports, module) {
             clearDrag(e);
             if (this.disableDropbox)
                 return;
-
-            return upload.uploadFromDrop(e, path);
+console.log(dragContext.path, path);
+            if (path)
+                upload.uploadFromDrop(e, path);
+            apf.stopEvent(e);
         }
         
         function clearDrag(e) {
@@ -104,6 +108,16 @@ define(function(require, exports, module) {
         }
         
         // helper
+        function findHost(el) {
+            var treeEl = tree.getElement("container");
+            while (el) {
+                var host = el.host;
+                if (host && (host.cloud9pane || host === treeEl))
+                    return host;
+                el = el.parentNode
+            }
+        }
+        
         function isFile(e) {
             var types = e.dataTransfer.types;
             if (types && Array.prototype.indexOf.call(types, 'Files') !== -1)
@@ -168,7 +182,6 @@ define(function(require, exports, module) {
                     treeMouseHandler.captureMouse(e);
                     treeMouseHandler.setState("drag");
                     treeMouseHandler.dragStart();
-                    dragContext = {};
                     tree.tree.on("folderDragEnter", folderDragEnter);
                     tree.tree.on("folderDragLeave", folderDragLeave);
                 }

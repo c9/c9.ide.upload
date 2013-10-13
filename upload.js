@@ -215,17 +215,20 @@ define(function(require, exports, module) {
                 if (!window.FileReader)
                     return alert(
                         "Unable to open files",
-                        "Drop on the tree to upload",
+                        "Drop files on the tree to upload",
                         ""
                     );
                 if (batch.files.length > MAX_OPEN_COUNT)
                     return alert(
                         "Maximum open count exceeded (" + batch.files.length + ")",
-                        "Drop on the tree to upload",
+                        "Drop files on the tree to upload",
                         ""
                     );
                     
+                var hasImage = false;
                 batch.files.forEach(function(file, i) {
+                    if (/image/i.test(file.type))
+                        return hasImage = true;
                     var reader = new FileReader();
                     reader.onload = function() {
                         tabManager.open({
@@ -238,7 +241,14 @@ define(function(require, exports, module) {
                     };
                     reader.readAsText(file);
                 });
-        
+                
+                if (hasImage)
+                    alert(
+                        "Can't open an image",
+                        "Drop files on the tree to upload",
+                        ""
+                    );
+                    
                 return;
             }
             else if (targetPath) {
