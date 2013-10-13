@@ -15,6 +15,7 @@ define(function(require, exports, module) {
         
         var css      = require("text!./dragdrop.css");
         
+        var dropbox
         // TODO move all this into the tree
         var treeMouseHandler; 
         
@@ -29,74 +30,142 @@ define(function(require, exports, module) {
             
             ui.insertCss(css, plugin);
             
-            upload.on("drawUploadWindow", function(uploadDropArea) {
-                uploadDropArea.addEventListener("dragenter", dragEnter, false);
-                uploadDropArea.addEventListener("dragleave", dragLeave, false);
-                uploadDropArea.addEventListener("drop", dragDrop, false);
-                uploadDropArea.addEventListener("dragover", noopHandler, false);
-            });
-            
-            tree.getElement("container", function(container) {
-                var el = container.$ext;
-                document.body.addEventListener("dragenter", treeDragEnter, false);
-                document.body.addEventListener("dragleave", treeDragLeave, false);
-                document.body.addEventListener("dragover", treeDragOver, true);
-                el.addEventListener("drop", treeDragDrop, false);
-                el.addEventListener("dragover", noopHandler, false);
-                treeMouseHandler = tree.tree.$mouseHandler;
-            });
-            
-            var holder = layout.findParent(plugin).$ext;
-            var dropbox = holder.dropbox = document.createElement("div");
-            dropbox.className = "draganddrop";
-
-            var label = document.createElement("span");
-            label.textContent = "Drop files here to upload";
-            
-            dropbox.appendChild(label);
-            holder.appendChild(dropbox);
-
-            holder.addEventListener("dragenter", dragEnter, false);
-            dropbox.addEventListener("dragleave", dragLeave, false);
-            dropbox.addEventListener("drop", dragDrop, false);
-            dropbox.addEventListener("dragover", noopHandler, false);
+            window.addEventListener("dragenter", dragEnter, false);
+            window.addEventListener("dragleave", dragLeave, false);
+            window.addEventListener("dragover", dragOver, true);
+            window.addEventListener("drop", dragDrop, false);
         }
         
+        function unload() {
+            loaded = false;
+            window.removeEventListener("dragenter", dragEnter, false);
+            window.removeEventListener("dragleave", dragLeave, false);
+            window.removeEventListener("dragover", dragOver, true);
+            window.removeEventListener("drop", dragDrop, false);
+        }
+        
+        /***** Methods *****/
+        
+        var dragContext = {};
+        
+        function dragEnter(e) {
+            apf.preventDefault(e)
+            if (this.disableDropbox || !isFile(e))
+                return;
+            var host = apf.findHost(e.target);
+            if (!host)
+                return;
+            // TODO open tree panel when hoverng over the button
+
+            if (host === tree.getElement("container"))
+                startTreeDrag(e);
+            else
+                stopTreeDrag(e);
+                
+            updateUploadAreaDrag(host);
+            updateTabDrag(host);
+                
+            clearTimeout(dragContext.timer);
+        }
+        
+        function dragLeave(e) {
+            apf.preventDefault(e);
+            if (this.disableDropbox)
+                return;
+                
+            clearTimeout(dragContext.timer);
+            dragContext.timer = setTimeout(clearDrag, 100);
+        }
+        
+        function dragOver(e) {
+            apf.preventDefault(e);
+            
+            if (treeMouseHandler && treeMouseHandler.$onCaptureMouseMove)
+                treeMouseHandler.$onCaptureMouseMove(e);
+            if (dragContext.timer)
+                dragContext.timer = clearTimeout(dragContext.timer);
+        }
+        
+        function dragDrop(e) {
+            apf.preventDefault(e);
+            var path = dragContext.path || dragContext.pane;
+            clearDrag(e);
+            if (this.disableDropbox)
+                return;
+
+            return upload.uploadFromDrop(e, path);
+        }
+        
+        function clearDrag(e) {
+            stopTreeDrag(e);
+            updateTabDrag();
+            updateUploadAreaDrag();
+        }
+        
+        // helper
         function isFile(e) {
             var types = e.dataTransfer.types;
             if (types && Array.prototype.indexOf.call(types, 'Files') !== -1)
                 return true;
         }
         
-        /***** Methods *****/
+        function getDropbox() {
+            if (!dropbox) {
+                dropbox = document.createElement("div");
+                dropbox.className = "draganddrop";
+
+                var label = document.createElement("span");
+                label.textContent = "Drop a file here to open";
+                dropbox.appendChild(label);
+            }
+            return dropbox;
+        }
         
-        function dragLeave(e) {
-            if (this.disableDropbox || !isFile(e))
-                return;
-
-            apf.stopEvent(e);
-            apf.setStyleClass(this.dropbox || this, null, ["over"]);
+        function updateTabDrag(host) {
+            if (host && host.parentNode) {
+                if (host.$baseCSSname === "editor_tab")
+                    var target = host;
+                else if (host.parentNode.$baseCSSname === "editor_tab")
+                    var target = host.parentNode;
+            }
+            
+            if (target) {
+                dragContext.path = null;
+                if (dragContext.tab == target)
+                    return;
+                dragContext.tab = target;
+                var parent = target.$ext.querySelector(".session_page.curpage");
+                dropbox = getDropbox();
+                parent && parent.appendChild(dropbox);
+                apf.setStyleClass(dropbox, "over");
+                
+                // TODO how to find pane from host?
+                dragContext.pane = {}
+            } else if (dragContext.tab) {
+                dragContext.pane = null;
+                dragContext.tab = null;
+                if (dropbox && dropbox.parentNode) {
+                    dropbox.parentNode.removeChild(dropbox);
+                    apf.setStyleClass(dropbox, null, ["over"]);
+                }
+            }
         }
-
-        function dragEnter(e) {
-            if (this.disableDropbox || !isFile(e))
-                return;
-
-            apf.stopEvent(e);
-            apf.setStyleClass(this.dropbox || this, "over");
-        }
-
-        function dragDrop(e) {
-            dragLeave.call(this, e);
-            if (this.disableDropbox || !isFile(e))
-                return;
-
-            return upload.uploadFromDrop(e);
-        }
-
-        var dragContext = {};
         
+        function updateUploadAreaDrag(host) {
+            if (host && host.$ext && host.$ext.id === "uploadDropArea") {
+                dragContext.uploadDropArea = host.$ext;
+                dragContext.path = "";
+                apf.setStyleClass(dragContext.uploadDropArea, "over");
+            } else if (dragContext.uploadDropArea) {
+                apf.setStyleClass(dragContext.uploadDropArea, null, ["over"]);
+                dragContext.uploadDropArea = null;
+            }
+        }
+
+        // tree
         function startTreeDrag(e) {
+            if (!treeMouseHandler)
+                treeMouseHandler = tree.tree.$mouseHandler;
             if (treeMouseHandler.releaseMouse) return;
             
             treeMouseHandler.captureMouse(e);
@@ -109,7 +178,7 @@ define(function(require, exports, module) {
         }
         
         function stopTreeDrag(e) {
-            if (!treeMouseHandler.releaseMouse) return;
+            if (!treeMouseHandler || !treeMouseHandler.releaseMouse) return;
             
             treeMouseHandler.releaseMouse(e || {});
             tree.tree.off("folderDragEnter", folderDragEnter);
@@ -127,62 +196,6 @@ define(function(require, exports, module) {
             dragContext.path = node.path;
         }
         
-        function treeDragEnter(e) {
-            if (this.disableDropbox || !isFile(e))
-                return;
-            
-            var treeEl = tree.getElement("container").$ext;
-            if (isChildOf(treeEl, e.target))
-                startTreeDrag(e);
-            else
-                stopTreeDrag(e);
-                
-            clearTimeout(dragContext.timer);
-            apf.stopEvent(e);
-        }
-        
-        function treeDragLeave(e) {
-            if (this.disableDropbox)
-                return;
-                
-            clearTimeout(dragContext.timer);
-            dragContext.timer = setTimeout(stopTreeDrag, 100);
-            apf.stopEvent(e);
-        }
-        
-        function treeDragOver(e) {
-            if (treeMouseHandler.$onCaptureMouseMove)
-                treeMouseHandler.$onCaptureMouseMove(e);
-            if (dragContext.timer)
-                dragContext.timer = clearTimeout(dragContext.timer);
-        }
-        
-        function treeDragDrop(e) {
-            var path = dragContext.path;
-            apf.stopEvent(e);
-            stopTreeDrag(e);
-            if (this.disableDropbox)
-                return;
-
-            return upload.uploadFromDrop(e, path);
-        }
-        
-        function noopHandler(e) {
-            if (this.disableDropbox)
-                return;
-
-            apf.stopEvent(e);
-        }
-        
-        function isChildOf(parent, child) {
-            var el = child;
-            while (el) {
-                if (parent == el) return true;
-                el = el.parentNode;
-            }
-            return false;
-        }
-        
         /***** Lifecycle *****/
         
         plugin.on("load", function(){
@@ -195,7 +208,7 @@ define(function(require, exports, module) {
             
         });
         plugin.on("unload", function(){
-            loaded = false;
+            unload();
         });
         
         /***** Register and define API *****/

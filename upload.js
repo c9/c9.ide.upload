@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "util", "ui", "layout", "menus", "fs", "tree", "fs.cache", 
-        "upload.manager", "apf", "dialog.fileoverwrite", "dialog.alert"
+        "upload.manager", "apf", "dialog.fileoverwrite", "dialog.alert", "tabManager"
     ];
     main.provides = ["upload"];
     return main;
@@ -19,6 +19,7 @@ define(function(require, exports, module) {
         var question      = imports["dialog.fileoverwrite"].show;
         var alert         = imports["dialog.alert"].show;
         var apf           = imports.apf;
+        var tabManager    = imports.tabManager;
         
         var path          = require("path");
         var css           = require("text!./upload.css");
@@ -27,6 +28,7 @@ define(function(require, exports, module) {
         
         /***** Initialization *****/
         
+        var MAX_OPEN_COUNT  = options.maxOpenCount || 10;
         var MAX_FILE_COUNT  = options.maxFileCount || 20000;
         var MAX_UPLOAD_SIZE = options.maxUploadSize || 50 * 1000 * 1000;
 
@@ -209,7 +211,37 @@ define(function(require, exports, module) {
 
             
             var targetFolder;
-            if (targetPath) {
+            if (targetPath && typeof targetPath === "object") {
+                if (!window.FileReader)
+                    return alert(
+                        "Unable to open files",
+                        "Drop on the tree to upload",
+                        ""
+                    );
+                if (batch.files.length > MAX_OPEN_COUNT)
+                    return alert(
+                        "Maximum open count exceeded (" + batch.files.length + ")",
+                        "Drop on the tree to upload",
+                        ""
+                    );
+                    
+                batch.files.forEach(function(file, i) {
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        tabManager.open({
+                            path: "/" + file.name, 
+                            value: reader.result, 
+                            document: { meta: { newfile: true }},
+                            active: i === 0,
+                            pane: targetPath.pane
+                        }, function(err, tab) {});
+                    };
+                    reader.readAsText(file);
+                });
+        
+                return;
+            }
+            else if (targetPath) {
                 targetFolder = fsCache.findNode(targetPath);
             }
             else {

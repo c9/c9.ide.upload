@@ -58,7 +58,7 @@ UploadJob.prototype._startUpload = function() {
     var job = this;
     if (job.vfs) {
         return job.vfs.rest(job.fullPath, {
-            method: "put", 
+            method: "PUT", 
             body: job.file,
             isFile: true,
             progress: function(loaded, total) {
