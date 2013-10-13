@@ -233,7 +233,7 @@ define(function(require, exports, module) {
                             value: reader.result, 
                             document: { meta: { newfile: true }},
                             active: i === 0,
-                            pane: targetPath.pane
+                            pane: targetPath
                         }, function(err, tab) {});
                     };
                     reader.readAsText(file);

@@ -56,6 +56,9 @@ define(function(require, exports, module) {
             var host = apf.findHost(e.target);
             if (!host)
                 return;
+            
+            if (!dragContext.mouseListener)
+                window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
             updateTreeDrag(e, host);
             updateUploadAreaDrag(host);
@@ -93,6 +96,8 @@ define(function(require, exports, module) {
         }
         
         function clearDrag(e) {
+            dragContext.mouseListener = null;
+            window.removeEventListener("mousemove", clearDrag, true)
             updateTreeDrag(e);
             updateTabDrag();
             updateUploadAreaDrag();
@@ -118,28 +123,22 @@ define(function(require, exports, module) {
         }
         
         function updateTabDrag(host) {
-            if (host && host.parentNode) {
-                if (host.$baseCSSname === "editor_tab")
-                    var target = host;
-                else if (host.parentNode.$baseCSSname === "editor_tab")
-                    var target = host.parentNode;
-            }
-            
-            if (target) {
+            var pane = host && host.parentNode &&
+                (host.cloud9pane || host.parentNode.cloud9pane);
+                
+            if (pane) {
                 dragContext.path = null;
-                if (dragContext.tab == target)
+                if (dragContext.pane === pane)
                     return;
-                dragContext.tab = target;
-                var parent = target.$ext.querySelector(".session_page.curpage");
+                
+                var parent = pane.container;
                 dropbox = getDropbox();
                 parent && parent.appendChild(dropbox);
                 apf.setStyleClass(dropbox, "over");
                 
-                // TODO how to find pane from host?
-                dragContext.pane = {}
-            } else if (dragContext.tab) {
+                dragContext.pane = pane;
+            } else if (dragContext.pane) {
                 dragContext.pane = null;
-                dragContext.tab = null;
                 if (dropbox && dropbox.parentNode) {
                     dropbox.parentNode.removeChild(dropbox);
                     apf.setStyleClass(dropbox, null, ["over"]);
@@ -172,13 +171,11 @@ define(function(require, exports, module) {
                     dragContext = {};
                     tree.tree.on("folderDragEnter", folderDragEnter);
                     tree.tree.on("folderDragLeave", folderDragLeave);
-                    window.addEventListener("mousemove", updateTreeDrag, true);
                 }
             } else if (treeMouseHandler && treeMouseHandler.releaseMouse) {
                 treeMouseHandler.releaseMouse(e || {});
                 tree.tree.off("folderDragEnter", folderDragEnter);
                 tree.tree.off("folderDragLeave", folderDragLeave);
-                window.removeEventListener("mousemove", updateTreeDrag, true)
             }
         }
 
