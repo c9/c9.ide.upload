@@ -153,7 +153,8 @@ define(function(require, exports, module) {
                 dragContext.pane = null;
                 if (dropbox && dropbox.parentNode) {
                     setTimeout(function(){
-                        dropbox.parentNode.removeChild(dropbox);
+                        if (dropbox.parentNode)
+                            dropbox.parentNode.removeChild(dropbox);
                     }, 100);
                     apf.setStyleClass(dropbox, null, ["over"]);
                 }
