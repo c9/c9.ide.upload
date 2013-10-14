@@ -177,6 +177,7 @@ define(function(require, module, exports) {
                     case STATE_ERROR:
                         done.push(job);
                         jobs.splice(i, 1);
+                        i--;
                         break;
                     case STATE_RESUME:
                         candidates.push(job);
