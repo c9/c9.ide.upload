@@ -137,7 +137,8 @@ define(function(require, exports, module) {
         function updateTabDrag(host) {
             var pane = host && host.parentNode &&
                 (host.cloud9pane || host.parentNode.cloud9pane);
-                
+            
+            clearTimeout(dragContext.dropboxTimer);
             if (pane) {
                 dragContext.path = null;
                 if (dragContext.pane === pane)
@@ -152,7 +153,7 @@ define(function(require, exports, module) {
             } else if (dragContext.pane) {
                 dragContext.pane = null;
                 if (dropbox && dropbox.parentNode) {
-                    setTimeout(function(){
+                    dragContext.dropboxTimer = setTimeout(function(){
                         if (dropbox.parentNode)
                             dropbox.parentNode.removeChild(dropbox);
                     }, 100);
