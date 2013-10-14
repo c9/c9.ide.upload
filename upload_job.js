@@ -37,7 +37,7 @@ UploadJob.prototype.cancel = function() {
 
 UploadJob.prototype._setState = function(state) {
     this.state = state;
-    this._emit("changeState", { state: state });
+    this._emit("changeState", { state: state, job: this  });
     this._emit(state);
 };
 
@@ -51,7 +51,7 @@ UploadJob.prototype._error = function(code, message) {
 
 UploadJob.prototype._progress = function(progress) {
     this.progress = progress;
-    this._emit("progress", { progress: progress });
+    this._emit("progress", { progress: progress, job: this });
 };
 
 UploadJob.prototype._startUpload = function() {

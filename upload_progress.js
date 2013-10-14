@@ -14,6 +14,8 @@ define(function(require, exports, module) {
         var uploadManager = imports["upload.manager"];
         
         var css           = require("text!./upload_progress.css");
+        var TreeData      = require("ace_tree/data_provider");
+        var Tree          = require("ace_tree/tree");
         
         var boxUploadActivityMarkup = require("text!./markup/box_upload_activity.xml");
         
@@ -22,7 +24,7 @@ define(function(require, exports, module) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
         
-        var list, boxUploadActivity, mdlUploadActivity;
+        var list, boxUploadActivity, mdlUploadActivity, tree;
         
         var loaded = false;
         function load() {
@@ -67,18 +69,43 @@ define(function(require, exports, module) {
             });
             
             list = plugin.getElement("lstUploadActivity");
-            mdlUploadActivity = plugin.getElement("mdlUploadActivity");
+
+            tree = new Tree(list.$ext);
+            mdlUploadActivity = new TreeData();
+            tree.setDataProvider(mdlUploadActivity);
+            tree.renderer.setScrollMargin(10, 10);
+            tree.renderer.setTheme({cssClass: "list-uploadactivity"});
+            mdlUploadActivity.rowHeight = 21;
+            mdlUploadActivity.rowHeightInner = 20;
+            mdlUploadActivity.getContentHTML = function(node) {
+                return "<span class='uploadactivity-caption'>"
+                    + node.label
+                    + "</span>"
+                    + "<span class='uploadactivity-progress'>"
+                    + (node.progress == undefined ? "&nbsp;": node.progress + "%") +"</span>"
+                    + "<span class='uploadactivity-delete'>&nbsp;</span>"
+            };
+            mdlUploadActivity.updateProgress = function(node, val) {
+                node.progress = val;
+                this._signal("changeClass");
+            };
+            mdlUploadActivity.updateNode = function(el, node) {
+                if (node.progress && el.children[2]) 
+                    el.children[2].textContent = node.progress + "%";
+            };
             
-            list.setModel(mdlUploadActivity);
-            
-            list.on("beforeremove", function(e) {
-                var file = e.args[0].args[0];
-                var job = uploadManager.jobById(file.getAttribute("job_id"));
+            tree.on("delete", function(node) {
+                var job = uploadManager.jobById(node.job_id);
                 if (job)
                     job.cancel();
-                    
                 return false;
             });
+            
+            tree.on("click", function(ev) {
+                if (ev.domEvent.target.className == 'uploadactivity-delete') {
+                    tree._signal("delete", ev.getNode());
+                }
+            })
             
             plugin.getElement("btnCancelUploads").on("click", function(e) {
                 cancelAll();
@@ -93,7 +120,7 @@ define(function(require, exports, module) {
                     showPanel(boxUploadActivity);
                 }
             });
-                    
+
             showPanel(boxUploadActivity);
             emit("draw");
         }
@@ -112,26 +139,28 @@ define(function(require, exports, module) {
             }); 
         }
         
-        function removePanel(list) {
+        function removePanel(panel) {
             if (!panelVisible) return;
             panelVisible = false;
-            anims.animateSplitBoxNode(list, {
+            anims.animateSplitBoxNode(panel, {
                 height         : "0px",
                 duration       : 0.2,
                 timingFunction : "ease-in-out"
             }); 
         }
         
-        function showPanel(list) {
+        function showPanel(panel) {
             if (panelVisible) return;
             
             panelVisible = true;
-            list.show();
-            list.$ext.style.height = "22px";
-            anims.animateSplitBoxNode(list, {
+            panel.show();
+            panel.$ext.style.height = "22px";
+            anims.animateSplitBoxNode(panel, {
                 height         : "175px",
                 duration       : 0.2,
                 timingFunction : "ease-in-out"
+            }, function() {
+                tree && tree.resize();
             });
         }
         
@@ -139,31 +168,28 @@ define(function(require, exports, module) {
             var job = e.job
             show();
             
-            var n = apf
-                .n("<file />")
-                .attr("name", job.file.name)
-                .attr("job_id", job.id);
-            
-            if (job.progress)
-                n.attr("progress", Math.round(job.progress * 100));
-                
-            var node = mdlUploadActivity.appendXml(n.node());
-            
-            job.on("progress", function() {
-                apf.xmldb.setAttribute(node, "progress", Math.round(job.progress * 100));
-            });
-            
+            var node = {label: job.file.name, job_id: job.id};
+            job.node = node;
+            mdlUploadActivity.visibleItems.push(node);
+            mdlUploadActivity._signal("change");
+            job.on("progress", updateProgress);
             updateUploadCount();
+        }
+        
+        function updateProgress(e) {
+            if (e.job.node) {
+                mdlUploadActivity.updateProgress(e.job.node, Math.round(e.progress * 100))
+            }
         }
         
         function onRemoveUploadJob(e) {
             var job = e.job;
             show();
             
-            var item = mdlUploadActivity.queryNode("file[@job_id='" + job.id + "']");
-            if (item)
-                apf.xmldb.removeNode(item);
-            
+            var i = mdlUploadActivity.visibleItems.indexOf(job.node);
+            if (i != -1)
+                mdlUploadActivity.visibleItems.splice(i, 1);
+            mdlUploadActivity._signal("change");
             updateUploadCount();
             
             if (uploadManager.jobs.length === 0) {

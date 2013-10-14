@@ -1,9 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-
-    <a:model id="mdlUploadActivity">
-        <data />
-    </a:model>
-
     <a:frame id="boxUploadActivity" caption="Upload Activity" class="uploadframe">
         <a:button id="btnCancelUploads"
           caption = "Cancel"
@@ -21,15 +16,7 @@
             skin = "list-uploadactivity"
             skinset = "uploadfiles"
             height="160"
-            scrollbar = "sbShared 32 2 2"
         >
-            <a:each match="[file]">
-                <a:caption><?lm
-                    <div class="uploadactivity-caption bold">[@name]</div>
-                    <div class="uploadactivity-progress">[@progress]%</div>
-                    <div class="uploadactivity-delete" onclick="apf.findHost(this.parentNode).remove(%[.])"></div>
-                ?></a:caption>
-            </a:each>
         </a:list>
     </a:frame>
 </a:application>

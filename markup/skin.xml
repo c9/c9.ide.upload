@@ -9,13 +9,13 @@
                 right: 0;
             }
             
-            .list-uploadactivity>DIV.uploadactivity-items {
+            .list-uploadactivity>DIV.uploadactivity-tree-rows {
                 height: 100px;
                 max-height: 100px;
                 overflow: hidden;
             }
             
-            .list-uploadactivity .item {
+            .list-uploadactivity .tree-row {
                 height      : 20px;
                 padding     : 0 5px 2px 5px;
                 margin      : 0 3px;
@@ -24,7 +24,7 @@
                 border-bottom:1px solid transparent;
             }
 
-            .list-uploadactivity .item .icon {
+            .list-uploadactivity .tree-row .icon {
                 position    : absolute;
                 width       : 16px;
                 height      : 16px;
@@ -33,8 +33,8 @@
                 background-position:0 0;
             }
 
-            .list-uploadactivity .item .uploadactivity-caption,
-            .list-uploadactivity .item .uploadactivity-progress {
+            .list-uploadactivity .tree-row .uploadactivity-caption,
+            .list-uploadactivity .tree-row .uploadactivity-progress {
                 display     : block;
                 height      : 18px;
                 padding     : 3px 0 0 0;
@@ -46,48 +46,48 @@
                 cursor      : default;
             }
             
-            .list-uploadactivity .item .uploadactivity-caption {
+            .list-uploadactivity .tree-row .uploadactivity-caption {
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 padding-right: 30px;
             }
-            .list-uploadactivity .item .uploadactivity-caption.bold {
+            .list-uploadactivity .tree-row .uploadactivity-caption.bold {
                 font-weight: bold;
             }
             
-            .list-uploadactivity .item .uploadactivity-progress {
+            .list-uploadactivity .tree-row .uploadactivity-progress {
                 display     : block;
                 color       : #179439;
                 position    : absolute;
                 right       : 5px;
-                top         : 2px;
+                top         : 0px;
             }
             
-            .list-uploadactivity .item.hover .uploadactivity-progress {
+            .list-uploadactivity .tree-row:hover .uploadactivity-progress {
                 right: 23px;
             }
             
-            .list-uploadactivity .item.hover {
+            .list-uploadactivity .tree-row:hover {
                 cursor          : pointer;
                 background-color: #748512;
                 color           : #f1f1f1;
                 border-radius   : 3px;
             }
             
-            .list-uploadactivity .item.hover .uploadactivity-caption {
+            .list-uploadactivity .tree-row:hover .uploadactivity-caption {
                 text-shadow : none;
             }
             
-            .list-uploadactivity .item.hover .uploadactivity-progress {
+            .list-uploadactivity .tree-row:hover .uploadactivity-progress {
                 color: #082E13;
             }
             
-            .list-uploadactivity .item.selected {
+            .list-uploadactivity .tree-row.selected {
                 cursor:default;
             }
             
-            .list-uploadactivity .item .uploadactivity-delete {
+            .list-uploadactivity .tree-row .uploadactivity-delete {
                 width               : 21px;
                 height              : 19px;
                 position            : absolute;
@@ -100,15 +100,15 @@
                 display             : none;
             }
 
-            .list-uploadactivity .item.hover .uploadactivity-delete {
+            .list-uploadactivity .tree-row:hover .uploadactivity-delete {
                 display: block;
             }
             
-            .list-uploadactivity .item.hover .uploadactivity-delete:hover {
+            .list-uploadactivity .tree-row:hover .uploadactivity-delete:hover {
                 background-position : 0 -19px;
             }
             
-            .list-uploadactivity .item.hover .uploadactivity-delete:active {
+            .list-uploadactivity .tree-row:hover .uploadactivity-delete:active {
                 background-position : 0 -38px;
             }
             
@@ -119,10 +119,10 @@
                 color       : #404040;
                 text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             }
+            
         ]]></a:style>
         <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
-            .list-uploadactivity .item .uploadactivity-caption {
-                height  : 17px;
+            .list-uploadactivity .tree-row .uploadactivity-caption {
                 padding : 4px 30px 0 0;
             }
         ]]></a:style>
@@ -130,16 +130,16 @@
         <a:presentation>
             <a:main container=".">
                 <div class="list-uploadactivity">
-                    <div class="uploadactivity-items"></div>
+                    <div class="uploadactivity-tree-rows"></div>
                 </div>
             </a:main>
-            <a:item
+            <a:tree-row
                 class   = "."
                 caption = "."
                 icon    = "div"
                 select  = ".">
-                <div class="item"> </div>
-            </a:item>
+                <div class="tree-row"> </div>
+            </a:tree-row>
             <a:dragindicator>
                 <div class='draglist'><span><u>-</u></span></div>
             </a:dragindicator>
