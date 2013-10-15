@@ -56,6 +56,8 @@ UploadJob.prototype._progress = function(progress) {
 
 UploadJob.prototype._startUpload = function() {
     var job = this;
+    job._setState(STATE_UPLOADING);
+    
     if (job.vfs) {
         return job.vfs.rest(job.fullPath, {
             method: "PUT", 
@@ -71,25 +73,23 @@ UploadJob.prototype._startUpload = function() {
             else
                 job._setState("done");
         });
-    }
+    } else {
+        var url = path.join(job.manager.filesPrefix, job.fullPath);
     
-    job._setState(STATE_UPLOADING);
-                    
-    var url = path.join(job.manager.filesPrefix, job.fullPath);
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.onload = function(e) { 
-        job._progress(1);
-        if (xhr.status >= 400)
-            job._error(xhr.status, xhr.statusText);
-        else
-            job._setState("done");
-        xhr = null;
-    };
-    xhr.upload.onprogress = function(e) {
-        if (e.lengthComputable) {
-            job._progress(e.loaded / e.total);
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", url, true);
+        xhr.onload = function(e) { 
+            job._progress(1);
+            if (xhr.status >= 400)
+                job._error(xhr.status, xhr.statusText);
+            else
+                job._setState("done");
+            xhr = null;
+        };
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                job._progress(e.loaded / e.total);
+            }
         }
     };
 

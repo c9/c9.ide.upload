@@ -76,11 +76,11 @@ define(function(require, exports, module) {
             
             var cleanup = function() {};
             function onExpand(e) {
-                console.log("expand", e.path, dir);
+                // console.log("expand", e.path, dir);
                 if (e.path == dir) {
                     cleanup();
                     updateNode(fsCache.findNode(dir));
-                    console.log("match!!");
+                    // console.log("match!!");
                 }
             }
             
@@ -91,13 +91,10 @@ define(function(require, exports, module) {
                         mime : job.file.type,
                         size : job.file.size || 0
                     });
-                    node.type = "fileupload";
                 }
-                else {
-                    node.type = "fileupload";
-                }
+                node.status = "predicted";
                 
-                console.log("new node", node);
+                // console.log("new node", node);
             }
             
             job.on("changeState", function(state) {
@@ -114,17 +111,17 @@ define(function(require, exports, module) {
                             updateNode(parent);
                         }
                         
-                        console.log("up", job)
+                        // console.log("up", job)
                         break;
                         
                     case "done":
                         // remove uploading state
                         var node = fsCache.findNode(job.fullPath);
                         if (node)
-                            fsCache.model.setAttribute(node, "type", "file");
+                            node.status = "loaded";
                         
                         cleanup();
-                        console.log("done", job)
+                        // console.log("done", job)
                         break;
                         
                     case "error":
