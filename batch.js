@@ -77,6 +77,7 @@ Batch.prototype._detectDirectories = function(callback) {
             reader.onloadend = function(e) {
                 var error = reader.error;
                 var hadError = error && (
+                    error.name == "SecurityError" || // Firefox
                     error.name == "NotReadableError" || // Firefox
                     error.code == 4 || // Safari 
                     error.code == 1); // Chrome 
