@@ -39,7 +39,7 @@ define(function(require, module, exports) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
 
-        var jobs, concurrentUploads
+        var jobs, concurrentUploads, timer;
 
         var loaded = false;
         function load(){
@@ -135,13 +135,13 @@ define(function(require, module, exports) {
         
         function uploadFile(file, fullPath) {
             var job = _createJob(file, fullPath);
-            job.on("changeState", _check);
+            job.on("changeState", _checkAsync);
             
             jobs.push(job);
             emit("addJob", { job: job });
             
-            // give caller a chance to attach event listeners
-            setTimeout(_check, 0);
+            // async to give caller a chance to attach event listeners
+            _checkAsync();
             return job;
         };
 
@@ -166,47 +166,56 @@ define(function(require, module, exports) {
             }
         };
         
-        function _check() {
-            jobs = jobs.filter(function(job) {
-                if (job.state === STATE_DONE || job.state === STATE_ERROR) {
-                    setTimeout(function() {
-                        emit("removeJob", { job: job });
-                    }, 0);
-                    return false;
-                }
-                return true;
-            });
-            
-            var wip = [];
+        function checkSync() {
+            var wip = []
+            var done = [];
             var candidates = [];
-            jobs.forEach(function(job) {
+            for (var i = 0; i < jobs.length; i++) {
+                var job = jobs[i];
                 switch (job.state) {
+                    case STATE_DONE:
+                    case STATE_ERROR:
+                        done.push(job);
+                        jobs.splice(i, 1);
+                        i--;
+                        break;
                     case STATE_RESUME:
                         candidates.push(job);
                         break;
-                        
                     case STATE_NEW:
                         candidates.unshift(job);
                         break;
-                        
                     case STATE_UPLOADING:
                         wip.push(job);
                         break;
-                        
                     default:
                         break;
                 }
-            });
+            }
 
-            for (var i=wip.length; i<concurrentUploads; i++) {
+            if (done.length) {
+                setTimeout(function() {
+                    done.forEach(function(job) {
+                        emit("removeJob", { job: job });
+                    });
+                }, 0);
+            }
+
+            for (var i = wip.length; i < concurrentUploads; i++) {
                 var job = candidates.pop();
                 if (!job)
                     break;
                     
                 job._startUpload();
             }
+            timer = null;
         };
-        
+
+        function _checkAsync() {
+            if (!timer)
+                timer = setTimeout(checkSync, 100);
+        }
+
         function forEach(list, onEntry, callback) {
             (function loop(i) {
                 if (i >= list.length)

@@ -38,7 +38,6 @@ UploadJob.prototype.cancel = function() {
 UploadJob.prototype._setState = function(state) {
     this.state = state;
     this._emit("changeState", { state: state, job: this  });
-    this._emit(state);
 };
 
 UploadJob.prototype._error = function(code, message) {

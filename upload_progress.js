@@ -199,9 +199,16 @@ define(function(require, exports, module) {
             }
         }
         
-        function updateUploadCount() {
+        var updateUploadCountSyncTimer;
+        function updateUploadCountSync() {
+            updateUploadCountSyncTimer = null;
             var count = uploadManager.jobs.length;
             plugin.getElement("boxUploadActivity").setAttribute("caption", "Upload Activity" + (count ? "(" + count + ")" : ""));
+        }
+        
+        function updateUploadCount() {
+            if (!updateUploadCountSyncTimer)
+                updateUploadCountSyncTimer = setTimeout(updateUploadCountSync, 100);
         }
         
         function cancelAll() {
