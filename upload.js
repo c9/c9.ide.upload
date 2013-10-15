@@ -30,7 +30,7 @@ define(function(require, exports, module) {
         
         var MAX_OPEN_COUNT  = options.maxOpenCount || 10;
         var MAX_FILE_COUNT  = options.maxFileCount || 20000;
-        var MAX_UPLOAD_SIZE = options.maxUploadSize || 50 * 1000 * 1000;
+        var MAX_UPLOAD_SIZE = options.maxUploadSize || 60 * 1024 * 1024;
 
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
@@ -91,19 +91,17 @@ define(function(require, exports, module) {
                         mime : job.file.type,
                         size : job.file.size || 0
                     });
-                    node.setAttribute("type", "fileupload");
-                    ui.xmldb.appendChild(parent, node);
+                    node.type = "fileupload";
                 }
                 else {
-                    ui.xmldb.setAttribute(node, "type", "fileupload");
+                    node.type = "fileupload";
                 }
                 
                 console.log("new node", node);
             }
             
             job.on("changeState", function(state) {
-                console.log("state", state)
-                switch(state) {
+                switch(state.state) {
                     case "uploading":
                         // add to tree
                         fsCache.on("readdir", onExpand);
@@ -123,16 +121,17 @@ define(function(require, exports, module) {
                         // remove uploading state
                         var node = fsCache.findNode(job.fullPath);
                         if (node)
-                            ui.xmldb.setAttribute(node, "type", "file");
+                            fsCache.model.setAttribute(node, "type", "file");
                         
                         cleanup();
+                        console.log("done", job)
                         break;
                         
                     case "error":
                         // remove node from tree
                         var node = fsCache.findNode(job.fullPath);
                         if (node)
-                            ui.xmldb.removeNode(node);
+                            fsCache.removeNode(node);
                             
                         cleanup();
                         break;
