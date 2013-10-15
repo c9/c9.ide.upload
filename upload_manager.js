@@ -39,7 +39,7 @@ define(function(require, module, exports) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
 
-        var jobs, concurrentUploads, timer;
+        var jobs, concurrentUploads
 
         var loaded = false;
         function load(){
@@ -166,56 +166,47 @@ define(function(require, module, exports) {
             }
         };
         
-        function checkSync() {
-            var wip = []
-            var done = [];
+        function _check() {
+            jobs = jobs.filter(function(job) {
+                if (job.state === STATE_DONE || job.state === STATE_ERROR) {
+                    setTimeout(function() {
+                        emit("removeJob", { job: job });
+                    }, 0);
+                    return false;
+                }
+                return true;
+            });
+            
+            var wip = [];
             var candidates = [];
-            for (var i = 0; i < jobs.length; i++) {
-                var job = jobs[i];
+            jobs.forEach(function(job) {
                 switch (job.state) {
-                    case STATE_DONE:
-                    case STATE_ERROR:
-                        done.push(job);
-                        jobs.splice(i, 1);
-                        i--;
-                        break;
                     case STATE_RESUME:
                         candidates.push(job);
                         break;
+                        
                     case STATE_NEW:
                         candidates.unshift(job);
                         break;
+                        
                     case STATE_UPLOADING:
                         wip.push(job);
                         break;
+                        
                     default:
                         break;
                 }
-            }
+            });
 
-            if (done.length) {
-                setTimeout(function() {
-                    done.forEach(function(job) {
-                        emit("removeJob", { job: job });
-                    });
-                }, 0);
-            }
-
-            for (var i = wip.length; i < concurrentUploads; i++) {
+            for (var i=wip.length; i<concurrentUploads; i++) {
                 var job = candidates.pop();
                 if (!job)
                     break;
                     
                 job._startUpload();
             }
-            timer = null;
         };
-
-        function _check() {
-            if (!timer)
-                timer = setTimeout(checkSync, 100);
-        }
-
+        
         function forEach(list, onEntry, callback) {
             (function loop(i) {
                 if (i >= list.length)
