@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
     main.consumes = [
-        "Plugin", "upload", "tree", "ui", "layout", "c9"
+        "Plugin", "upload", "tree", "ui", "layout", "c9", "tabManager"
     ];
 
     main.provides = ["dragdrop"];
@@ -13,6 +13,7 @@ define(function(require, exports, module) {
         var ui       = imports.ui;
         var layout   = imports.layout;
         var c9       = imports.c9;
+        var tabs     = imports.tabManager;
         
         var css      = require("text!./dragdrop.css");
         
@@ -35,6 +36,30 @@ define(function(require, exports, module) {
             document.addEventListener("dragleave", dragLeave, true);
             document.addEventListener("dragover", dragOver, true);
             document.addEventListener("drop", dragDrop, true);
+            
+            tree.getElement("container", function() {
+                var acetree = tree.tree;
+                acetree.on("dragIn", updateDrag);
+                acetree.on("dragMoveOutside", updateDrag);
+                acetree.on("dropOutside", treeDrop, false);
+                function updateDrag(ev) {
+                    host = findHost(ev.domEvent.target)
+                    updateTabDrag(!ev.dragInfo.isInTree && host);
+                }
+                function treeDrop(ev) {
+                    var selectedNodes = ev.dragInfo.selectedNodes;
+                    if (selectedNodes) {
+                        selectedNodes.forEach(function(node, i) {
+                            tabs.open({
+                                path: node.path,
+                                active: i === selectedNodes.length - 1,
+                                pane: dragContext.pane
+                            }, function(err, tab) {});
+                        });
+                    }
+                    updateTabDrag();
+                }
+            });
         }
         
         function unload() {
