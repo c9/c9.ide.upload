@@ -37,8 +37,9 @@ define(function(require, exports, module) {
             document.addEventListener("dragover", dragOver, true);
             document.addEventListener("drop", dragDrop, true);
             
-            tree.getElement("container", function() {
+            tree.on("draw", function() {
                 var acetree = tree.tree;
+                treeMouseHandler = acetree.$mouseHandler;
                 acetree.on("dragIn", updateDrag);
                 acetree.on("dragMoveOutside", updateDrag);
                 acetree.on("dropOutside", treeDrop, false);
@@ -200,9 +201,6 @@ define(function(require, exports, module) {
 
         // tree
         function updateTreeDrag(e, host) {
-            if (!treeMouseHandler)
-                treeMouseHandler = tree.tree.$mouseHandler;
-            
             var online = c9.status & c9.STORAGE;
             if (online && host === tree.getElement("container")) {
                 if (!treeMouseHandler.releaseMouse) {
