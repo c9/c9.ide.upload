@@ -1,4 +1,5 @@
 define(function(require, exports, module) {
+    "use strict";
     main.consumes = [
         "Plugin", "upload", "tree", "ui", "layout", "c9", "tabManager"
     ];
@@ -11,15 +12,12 @@ define(function(require, exports, module) {
         var upload   = imports.upload;
         var tree     = imports.tree;
         var ui       = imports.ui;
-        var layout   = imports.layout;
         var c9       = imports.c9;
         var tabs     = imports.tabManager;
         
         var css      = require("text!./dragdrop.css");
         
-        var dropbox
-        // TODO move all this into the tree
-        var treeMouseHandler; 
+        var dropbox, treeMouseHandler; 
         
         /***** Initialization *****/
         
@@ -44,7 +42,7 @@ define(function(require, exports, module) {
                 acetree.on("dragMoveOutside", updateDrag);
                 acetree.on("dropOutside", treeDrop, false);
                 function updateDrag(ev) {
-                    host = findHost(ev.domEvent.target)
+                    var host = findHost(ev.domEvent.target);
                     updateTabDrag(!ev.dragInfo.isInTree && host);
                 }
                 function treeDrop(ev) {
@@ -76,7 +74,7 @@ define(function(require, exports, module) {
         var dragContext = {};
         
         function dragEnter(e) {
-            apf.preventDefault(e)
+            apf.preventDefault(e);
             if (this.disableDropbox || !isFile(e))
                 return;
             e.dataTransfer.dropEffect = "copy";
@@ -118,14 +116,15 @@ define(function(require, exports, module) {
                 return;
 
             var target = dragContext.path || dragContext.pane;
-            if (target)
+            if (target) {
                 upload.uploadFromDrop(e, target);
-            apf.stopEvent(e);
+                apf.stopEvent(e);
+            }
         }
         
         function clearDrag(e) {
             dragContext.mouseListener = null;
-            window.removeEventListener("mousemove", clearDrag, true)
+            window.removeEventListener("mousemove", clearDrag, true);
             updateTreeDrag(e);
             updateTabDrag();
             updateUploadAreaDrag();
@@ -138,7 +137,7 @@ define(function(require, exports, module) {
                 var host = el.host;
                 if (host && (host.cloud9pane || host === treeEl))
                     return host;
-                el = el.parentNode
+                el = el.parentNode;
             }
         }
         
