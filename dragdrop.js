@@ -49,7 +49,7 @@ define(function(require, exports, module) {
                 }
                 function treeDrop(ev) {
                     var selectedNodes = ev.dragInfo.selectedNodes;
-                    if (selectedNodes) {
+                    if (selectedNodes && dragContext.pane) {
                         selectedNodes.forEach(function(node, i) {
                             tabs.open({
                                 path: node.path,
