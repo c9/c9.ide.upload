@@ -137,6 +137,8 @@ define(function(require, exports, module) {
                 var host = el.host;
                 if (host && (host.cloud9pane || host === treeEl))
                     return host;
+                if (el == dropbox)
+                    return {cloud9pane: dragContext.pane};
                 el = el.parentNode;
             }
         }
@@ -160,8 +162,8 @@ define(function(require, exports, module) {
         }
         
         function updateTabDrag(host) {
-            var pane = host && host.parentNode &&
-                (host.cloud9pane || host.parentNode.cloud9pane);
+            var pane = host && (host.cloud9pane
+                || host.parentNode && host.parentNode.cloud9pane);
             
             clearTimeout(dragContext.dropboxTimer);
             if (pane) {
