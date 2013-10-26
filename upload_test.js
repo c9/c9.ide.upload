@@ -48,17 +48,28 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.fs/fs.cache.xml",
         
+        // dialogs
+        "plugins/c9.ide.dialog/dialog",
+        "plugins/c9.ide.dialog.common/alert",
+        "plugins/c9.ide.dialog.common/confirm",
+        "plugins/c9.ide.dialog.common/filechange",
+        "plugins/c9.ide.dialog.common/fileoverwrite",
+        "plugins/c9.ide.dialog.common/fileremove",
+        "plugins/c9.ide.dialog.common/question",
+        "plugins/c9.ide.dialog.file/filesave",
+        
         // Mock plugins
         {
             consumes : ["apf", "ui", "Plugin"],
             provides : [
                 "commands", "commands", "layout", "watcher", "clipboard",
-                "save", "panels", "tabManager", "preferences", "anims"
+                "save", "panels", "tabManager", "preferences", "anims",
+                "auth.bootstrap", "panels", "Panel"
             ],
             setup    : expect.html.mocked
         },
         {
-            consumes : ["upload", "dragdrop"],
+            consumes : ["upload", "dragdrop", "dialog.fileoverwrite"],
             provides : [],
             setup    : main
         }
@@ -69,7 +80,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     });
     
     function main(options, imports, register) {
-        var upload  = imports.upload;
+        var upload          = imports.upload;
+        var overwriteDialog = imports["dialog.fileoverwrite"];
         
         // expect.html.setConstructor(function(tab){
         //     if (typeof tab == "object")
@@ -98,11 +110,13 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                     };
                     
                     upload.fileExistsDialog(batch, "/lib", "server.js", function(action, toAll) {
-                        console.log("action", action, toAll);
+                        expect(action).is.equal("stop");
+                        expect(toAll).ok;
                         done();
                     });
-                    
-                    upload.getElement("btnUploadSkipAll").dispatchEvent("click");
+                    setTimeout(function() {
+                        overwriteDialog.getElement("notoall").dispatchEvent("click");
+                    }, 0);
                 });
             });
             
