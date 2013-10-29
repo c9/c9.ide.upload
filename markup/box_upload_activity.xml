@@ -9,7 +9,7 @@
           right   = "20" 
           zindex  = "100" />
         <a:button id="btnToggleUploadQueue" skin="btn_console_open" 
-            icon="switch.png" state="true" value="0" margin="6 5 0 0" 
+             state="true" value="0" margin="6 5 0 0" 
             top="-33" right="-5" zindex="100" />
     
         <a:list id="lstUploadActivity"
