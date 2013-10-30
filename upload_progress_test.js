@@ -24,7 +24,10 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             packagePath  : "plugins/c9.ide.ui/ui",
             staticPrefix : "plugins/c9.ide.ui"
         },
-        "plugins/c9.ide.tree/tree",
+        {
+            packagePath: "plugins/c9.ide.tree/tree",
+            staticPrefix: "/static/plugins/c9.ide.layout.classic"
+        },
         "plugins/c9.ide.ui/menus",
         {
             packagePath: "plugins/c9.ide.upload/upload_progress",
@@ -43,12 +46,19 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.fs/fs.cache.xml",
         
+        "plugins/c9.ide.dialog/dialog",
+        "plugins/c9.ide.dialog.common/alert",
+        "plugins/c9.ide.dialog.common/question",
+        "plugins/c9.ide.dialog.common/fileoverwrite",
+        "plugins/c9.ide.dialog.common/fileremove",
+        
         // Mock plugins
         {
             consumes : ["apf", "ui", "Plugin"],
             provides : [
                 "commands", "commands", "layout", "watcher", 
-                "save", "panels", "tabManager", "preferences", "clipboard"
+                "save", "panels", "tabManager", "preferences", "clipboard",
+                "auth.bootstrap", "Panel"
             ],
             setup    : expect.html.mocked
         },
