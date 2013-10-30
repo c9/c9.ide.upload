@@ -89,7 +89,7 @@ define(function(require, exports, module) {
                 node.progress = val;
                 this._signal("changeClass");
             };
-            mdlUploadActivity.updateNode = function(el, node) {
+            mdlUploadActivity.redrawNode = function(el, node) {
                 if (node.progress && el.children[2]) 
                     el.children[2].textContent = node.progress + "%";
             };
