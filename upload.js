@@ -24,7 +24,7 @@ define(function(require, exports, module) {
         var path          = require("path");
         var css           = require("text!./upload.css");
         
-        var winUploadFilesMarkup      = require("text!./markup/win_upload_files.xml");
+        var winUploadFilesMarkup = require("text!./markup/win_upload_files.xml");
         
         /***** Initialization *****/
         
@@ -35,8 +35,7 @@ define(function(require, exports, module) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
         
-        var winUploadFiles, trFiles;
-        var winUploadFileExists;
+        var winUploadFiles;
         
         var loaded = false;
         function load(){
@@ -48,12 +47,6 @@ define(function(require, exports, module) {
             menus.addItemByPath("File/Upload Local Files...", new ui.item({
                 onclick : showUploadWindow
             }), 370, plugin);
-
-            menus.addItemByPath("File/Download Project", new ui.item({
-                onclick : function(){
-                    window.open("/download");
-                }
-            }), 390, plugin);
 
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree){

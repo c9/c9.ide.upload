@@ -24,7 +24,10 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             packagePath  : "plugins/c9.ide.ui/ui",
             staticPrefix : "plugins/c9.ide.ui"
         },
-        "plugins/c9.ide.tree/tree",
+        {
+            packagePath: "plugins/c9.ide.tree/tree",
+            staticPrefix: "/static/plugins/c9.ide.layout.classic"
+        },
         "plugins/c9.ide.ui/menus",
         {
             packagePath: "plugins/c9.ide.upload/upload_progress",
@@ -43,19 +46,24 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.fs/fs.cache.xml",
         
+        "plugins/c9.ide.dialog/dialog",
+        "plugins/c9.ide.dialog.common/alert",
+        "plugins/c9.ide.dialog.common/question",
+        "plugins/c9.ide.dialog.common/fileoverwrite",
+        "plugins/c9.ide.dialog.common/fileremove",
+        
         // Mock plugins
         {
             consumes : ["apf", "ui", "Plugin"],
             provides : [
-                "commands", "commands", "layout", "watcher", "Panel",
+                "commands", "commands", "layout", "watcher", 
                 "save", "panels", "tabManager", "preferences", "clipboard",
-                "dialog.alert", "dialog.fileremove", "dialog.fileoverwrite",
-                "auth.bootstrap"
+                "auth.bootstrap", "Panel"
             ],
             setup    : expect.html.mocked
         },
         {
-            consumes : ["upload.progress", "upload.manager", "settings", "tree"],
+            consumes : ["upload.progress", "upload.manager", "settings"],
             provides : [],
             setup    : main
         }
@@ -66,9 +74,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     });
     
     function main(options, imports, register) {
-        var progress      = imports["upload.progress"];
+        var progress = imports["upload.progress"];
         var uploadManager = imports["upload.manager"];
-        var tree          = imports.tree;
         
         describe('upload', function() {
             before(function(done){
@@ -102,7 +109,6 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 describe("unload()", function(){
                     it('should destroy all ui elements when it is unloaded', function(done) {
                         progress.unload();
-                        tree.unload();
                         
                         done();
                     });

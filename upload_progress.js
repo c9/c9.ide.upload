@@ -24,7 +24,7 @@ define(function(require, exports, module) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
         
-        var list, boxUploadActivity, mdlUploadActivity, tree;
+        var list, boxUploadActivity, mdlUploadActivity;
         
         var loaded = false;
         function load() {
