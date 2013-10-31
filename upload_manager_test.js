@@ -30,7 +30,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         
         // Mock plugins
         {
-            consumes : ["apf", "ui"],
+            consumes : [],
             provides : [
                 "auth.bootstrap"
             ],
@@ -91,10 +91,11 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             
             it('should upload a single file', function(done) {
                 var job = mgr.uploadFile(files["hello.txt"], "/upload/hello.txt");
-                job.on("progress", function(progress) {
-                    console.log("progress", progress * 100);
+                job.on("progress", function(e) {
+                    console.log("progress", e.progress * 100);
                 });
-                job.on("changeState", function(state) {
+                job.on("changeState", function(e) {
+                    var state = e.state;
                     if (state == "error")
                         assert.fail(null, null, "Upload failed " + JSON.stringify(job.error));
 
@@ -110,7 +111,8 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
 
             it("should upload to a non existing folder", function(done) {
                 var job = mgr.uploadFile(files["hello.txt"], "/upload/bla/hello.txt");
-                job.on("changeState", function(state) {
+                job.on("changeState", function(e) {
+                    var state = e.state;
                     if (state == "error")
                         assert.fail(null, null, "Upload failed " + JSON.stringify(job.error));
 
@@ -134,10 +136,10 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
 
                 var removed = 0;
                 var added = 0;
-                mgr.on("addJob", function(job) {
+                mgr.on("addJob", function(e) {
                     added += 1;
                 });
-                mgr.on("removeJob", function(job) {
+                mgr.on("removeJob", function(e) {
                     removed += 1;
                     if (mgr.jobs.length === 0 && removed === 3) {
                         expect(added).to.be.equal(3);
