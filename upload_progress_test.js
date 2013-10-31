@@ -47,13 +47,15 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         {
             consumes : ["apf", "ui", "Plugin"],
             provides : [
-                "commands", "commands", "layout", "watcher", 
-                "save", "panels", "tabManager", "preferences", "clipboard"
+                "commands", "commands", "layout", "watcher", "Panel",
+                "save", "panels", "tabManager", "preferences", "clipboard",
+                "dialog.alert", "dialog.fileremove", "dialog.fileoverwrite",
+                "auth.bootstrap"
             ],
             setup    : expect.html.mocked
         },
         {
-            consumes : ["upload.progress", "upload.manager", "settings"],
+            consumes : ["upload.progress", "upload.manager", "settings", "tree"],
             provides : [],
             setup    : main
         }
@@ -64,8 +66,9 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     });
     
     function main(options, imports, register) {
-        var progress = imports["upload.progress"];
+        var progress      = imports["upload.progress"];
         var uploadManager = imports["upload.manager"];
+        var tree          = imports.tree;
         
         describe('upload', function() {
             before(function(done){
@@ -99,6 +102,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 describe("unload()", function(){
                     it('should destroy all ui elements when it is unloaded', function(done) {
                         progress.unload();
+                        tree.unload();
                         
                         done();
                     });
