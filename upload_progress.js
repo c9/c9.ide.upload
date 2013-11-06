@@ -24,7 +24,7 @@ define(function(require, exports, module) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
         
-        var list, boxUploadActivity, mdlUploadActivity, tree;
+        var list, boxUploadActivity, mdlUploadActivity;
         
         var loaded = false;
         function load() {
@@ -142,11 +142,13 @@ define(function(require, exports, module) {
         function removePanel(panel) {
             if (!panelVisible) return;
             panelVisible = false;
-            anims.animateSplitBoxNode(panel, {
-                height         : "0px",
-                duration       : 0.2,
-                timingFunction : "ease-in-out"
-            }); 
+            if (!panel.$amlDestroyed) {
+                anims.animateSplitBoxNode(panel, {
+                    height         : "0px",
+                    duration       : 0.2,
+                    timingFunction : "ease-in-out"
+                });
+            }
         }
         
         function showPanel(panel) {
@@ -184,7 +186,9 @@ define(function(require, exports, module) {
         
         function onRemoveUploadJob(e) {
             var job = e.job;
-            show();
+            // RLD: I removed this because it makes little sense to me to force
+            // the box to show when an item is removed.
+            // show();
             
             var i = mdlUploadActivity.visibleItems.indexOf(job.node);
             if (i != -1)
@@ -203,7 +207,7 @@ define(function(require, exports, module) {
         function updateUploadCountSync() {
             updateUploadCountSyncTimer = null;
             var count = uploadManager.jobs.length;
-            plugin.getElement("boxUploadActivity").setAttribute("caption", "Upload Activity" + (count ? "(" + count + ")" : ""));
+            boxUploadActivity.setAttribute("caption", "Upload Activity" + (count ? "(" + count + ")" : ""));
         }
         
         function updateUploadCount() {

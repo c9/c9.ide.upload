@@ -1,4 +1,4 @@
-/*global describe it before after  =*/
+/*global describe it before after beforeEach =*/
 
 require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai) {
     var expect = chai.expect;
@@ -15,7 +15,10 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         },
         "plugins/c9.core/ext",
         "plugins/c9.core/http",
-        "plugins/c9.vfs.client/vfs_client",
+        {
+            packagePath: "plugins/c9.vfs.client/vfs_client",
+            debug: true
+        },
         "plugins/c9.vfs.client/endpoint",
         "plugins/c9.ide.auth/auth",
         {
@@ -27,16 +30,16 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             filesPrefix: "/workspace",
             workerPrefix: "/static/plugins/c9.ide.upload"
         },
-        
+
+
         // Mock plugins
         {
-            consumes : ["apf", "ui"],
+            consumes : [],
             provides : [
                 "auth.bootstrap"
             ],
             setup    : expect.html.mocked
         },
-        
         {
             consumes : ["upload.manager", "fs"],
             provides : [],
@@ -89,16 +92,28 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                 fs.rmdir("/upload", {recursive: true}, done);
             });
             
+            beforeEach(function(done) {
+                // wait for all uploads to finish before starting a new test
+                function check() {
+                    if (mgr.jobs.length === 0)
+                        return done();
+                        
+                    mgr.once("removeJob", check);
+                }
+                
+                check();
+            });
+            
             it('should upload a single file', function(done) {
                 var job = mgr.uploadFile(files["hello.txt"], "/upload/hello.txt");
-                job.on("progress", function(progress) {
-                    console.log("progress", progress * 100);
+                job.on("progress", function(e) {
+                    console.log("progress", e.progress * 100);
                 });
-                job.on("changeState", function(state) {
-                    if (state == "error")
+                job.on("changeState", function(e) {
+                    if (e.state == "error")
                         assert.fail(null, null, "Upload failed " + JSON.stringify(job.error));
 
-                    if (state == "done") {                    
+                    if (e.state == "done") {                    
                         fs.readFile("/upload/hello.txt", "utf8", function(err, data) {
                             expect(err).to.be.null;
                             expect(data).to.be.equal("Hello World");
@@ -110,11 +125,11 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
 
             it("should upload to a non existing folder", function(done) {
                 var job = mgr.uploadFile(files["hello.txt"], "/upload/bla/hello.txt");
-                job.on("changeState", function(state) {
-                    if (state == "error")
+                job.on("changeState", function(e) {
+                    if (e.state == "error")
                         assert.fail(null, null, "Upload failed " + JSON.stringify(job.error));
 
-                    if (state == "done") {
+                    if (e.state == "done") {
                         done();
                     }
                 });
@@ -122,14 +137,14 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                     
             it("should upload directories", function(done) {
                 mgr.batchFromFileApi([browserFs.root], function(err, batch) {
-                    console.log(err, batch)
+                    console.log(err, batch);
                     
                     mgr.upload("/upload/", batch, function dialog(batch, path, root, callback) {
                         console.log("dialog", arguments);
                         callback("replace", true);
                     }, function(err) {
                         console.log("scheduled");
-                    })
+                    });
                 });
 
                 var removed = 0;
@@ -142,7 +157,6 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                     if (mgr.jobs.length === 0 && removed === 3) {
                         expect(added).to.be.equal(3);
                         mgr.off("removeJob", arguments.callee);
-                        
                         fs.readFile("/upload/sub/sub.txt", "utf8", function(err, data) {
                             expect(data).to.be.equal("s'up?");
                             done();

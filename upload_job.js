@@ -61,7 +61,6 @@ UploadJob.prototype._startUpload = function() {
         return job.vfs.rest(job.fullPath, {
             method: "PUT", 
             body: job.file,
-            isFile: true,
             progress: function(loaded, total) {
                 job._progress(loaded / total);
             }
@@ -89,10 +88,9 @@ UploadJob.prototype._startUpload = function() {
             if (e.lengthComputable) {
                 job._progress(e.loaded / e.total);
             }
-        }
-    };
-
-    xhr.send(job.file);
+        };
+        xhr.send(job.file);
+    }
 };
 
 UploadJob.prototype._startUploadWorker = function() {
