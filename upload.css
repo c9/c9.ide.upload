@@ -1,6 +1,6 @@
 .uploadDropArea:before {
     content: "";
-    box-sizing: content-box;
+    .box-sizing(content-box);
     position: absolute;
     height: 95px;
     width: 335px;
