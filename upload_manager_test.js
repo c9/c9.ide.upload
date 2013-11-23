@@ -1,12 +1,10 @@
-/*global describe it before after beforeEach =*/
-
-"use client";
+/*global describe it before after  =*/
 
 require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai) {
     var expect = chai.expect;
     var assert = chai.assert;
     
-    architect.resolveConfig([
+    expect.setupArchitectTest([
         {
             packagePath : "plugins/c9.core/c9",
             startdate   : new Date(),
@@ -17,10 +15,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         },
         "plugins/c9.core/ext",
         "plugins/c9.core/http",
-        {
-            packagePath: "plugins/c9.vfs.client/vfs_client",
-            debug: true
-        },
+        "plugins/c9.vfs.client/vfs_client",
         "plugins/c9.vfs.client/endpoint",
         "plugins/c9.ide.auth/auth",
         {
@@ -32,8 +27,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             filesPrefix: "/workspace",
             workerPrefix: "/static/plugins/c9.ide.upload"
         },
-
-
+        
         // Mock plugins
         {
             consumes : [],
@@ -42,16 +36,13 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             ],
             setup    : expect.html.mocked
         },
+        
         {
             consumes : ["upload.manager", "fs"],
             provides : [],
             setup    : main
         }
-    ], function (err, config) {
-        if (err) throw err;
-        var app = architect.createApp(config);
-        app.on("service", function(name, plugin){ plugin.name = name; });
-    });
+    ], architect);
     
     function main(options, imports, register) {
         var mgr = imports["upload.manager"];
@@ -94,22 +85,10 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                 fs.rmdir("/upload", {recursive: true}, done);
             });
             
-            beforeEach(function(done) {
-                // wait for all uploads to finish before starting a new test
-                function check() {
-                    if (mgr.jobs.length === 0)
-                        return done();
-                        
-                    mgr.once("removeJob", check);
-                }
-                
-                check();
-            });
-            
             it('should upload a single file', function(done) {
                 var job = mgr.uploadFile(files["hello.txt"], "/upload/hello.txt");
-                job.on("progress", function(e) {
-                    console.log("progress", e.progress * 100);
+                job.on("progress", function(progress) {
+                    console.log("progress", progress * 100);
                 });
                 job.on("changeState", function(e) {
                     if (e.state == "error")
@@ -159,6 +138,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                     if (mgr.jobs.length === 0 && removed === 3) {
                         expect(added).to.be.equal(3);
                         mgr.off("removeJob", arguments.callee);
+                        
                         fs.readFile("/upload/sub/sub.txt", "utf8", function(err, data) {
                             expect(data).to.be.equal("s'up?");
                             done();

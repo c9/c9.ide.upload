@@ -6,7 +6,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
   function (architect, chai, baseProc) {
     var expect = chai.expect;
     
-    architect.resolveConfig([
+    expect.setupArchitectTest([
         {
             packagePath : "plugins/c9.core/c9",
             startdate   : new Date(),
@@ -66,7 +66,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             provides : [
                 "commands", "commands", "layout", "watcher", "clipboard",
                 "save", "panels", "tabManager", "preferences", "anims",
-                "auth.bootstrap", "panels", "Panel"
+                "auth.bootstrap", "panels", "Panel", "proc"
             ],
             setup    : expect.html.mocked
         },
@@ -75,11 +75,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             provides : [],
             setup    : main
         }
-    ], function (err, config) {
-        if (err) throw err;
-        var app = architect.createApp(config);
-        app.on("service", function(name, plugin){ plugin.name = name; });
-    });
+    ], architect);
     
     function main(options, imports, register) {
         var upload          = imports.upload;
