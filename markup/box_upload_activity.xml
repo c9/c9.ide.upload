@@ -5,12 +5,12 @@
           skin    = "btn-cancel-upload"
           skinset = "uploadfiles"
           margin  = "7 3 0 0" 
-          top     = "-24"
+          top     = "-25"
           right   = "20" 
           zindex  = "100" />
         <a:button id="btnToggleUploadQueue" skin="btn_console_open" 
              state="true" value="0" margin="6 5 0 0" 
-            top="-33" right="-5" zindex="100" />
+            top="-31" right="-15" zindex="100" />
     
         <a:list id="lstUploadActivity"
             skin = "list-uploadactivity"
