@@ -167,7 +167,6 @@ define(function(require, module, exports) {
         };
         
         function checkSync() {
-            return;
             var wip = []
             var done = [];
             var candidates = [];
