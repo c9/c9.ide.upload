@@ -42,7 +42,11 @@ define(function(require, exports, module) {
                 acetree.on("dragMoveOutside", updateDrag);
                 acetree.on("dropOutside", treeDrop, false);
                 function updateDrag(ev) {
-                    var host = findHost(ev.domEvent.target);
+                    var selectedNodes = ev.dragInfo.selectedNodes;
+                    var hasFile = selectedNodes && selectedNodes.some(function(node) {
+                        return!node.isFolder;
+                    });
+                    var host = hasFile && findHost(ev.domEvent.target);
                     updateTabDrag(!ev.dragInfo.isInTree && host);
                 }
                 function treeDrop(ev) {
