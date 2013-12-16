@@ -32,7 +32,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         {
             consumes : [],
             provides : [
-                "auth.bootstrap"
+                "auth.bootstrap", "info"
             ],
             setup    : expect.html.mocked
         },
