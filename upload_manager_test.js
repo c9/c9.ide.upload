@@ -135,7 +135,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                 });
                 mgr.on("removeJob", function(job) {
                     removed += 1;
-                    if (mgr.jobs.length === 0 && removed === 3) {
+                    if (mgr.jobs.length === 0 && removed === 4) {
                         expect(added).to.be.equal(3);
                         mgr.off("removeJob", arguments.callee);
                         
