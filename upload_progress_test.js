@@ -22,6 +22,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.ide.ui/focus",
         "plugins/c9.ide.ui/lib_apf",
         "plugins/c9.core/settings",
+        "plugins/c9.ide.api/api",
         "plugins/c9.ide.ui/anims",
         {
             packagePath  : "plugins/c9.ide.ui/ui",
