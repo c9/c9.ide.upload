@@ -8,6 +8,9 @@
                 left: 0;
                 right: 0;
             }
+            .list-uploadactivity .toggler{
+                display : none;
+            }
             
             .list-uploadactivity>DIV.uploadactivity-tree-rows {
                 height: 100px;
@@ -50,6 +53,7 @@
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 padding-right: 30px;
+                display : block;
             }
             .list-uploadactivity .tree-row .uploadactivity-caption.bold {
                 font-weight: bold;
