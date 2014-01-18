@@ -48,16 +48,6 @@ define(function(require, exports, module) {
                 onclick : showUploadWindow
             }), 370, plugin);
 
-            // Context Menu
-            tree.getElement("mnuCtxTree", function(mnuCtxTree){
-                menus.addItemToMenu(mnuCtxTree, new ui.item({
-                    id      : "mnuCtxTreeUpload",
-                    match   : "folder|file|project",
-                    caption : "Upload",
-                    onclick : showUploadWindow
-                }), 420, plugin);
-            });
-            
             uploadManager.on("addJob", onAddUploadJob);
         }
         
