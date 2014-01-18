@@ -3,7 +3,8 @@ define(function(require, exports, module) {
     
     main.consumes = [
         "Plugin", "util", "ui", "layout", "menus", "fs", "tree", "fs.cache", 
-        "upload.manager", "apf", "dialog.fileoverwrite", "dialog.alert", "tabManager"
+        "upload.manager", "apf", "dialog.fileoverwrite", "dialog.alert", 
+        "tabManager"
     ];
     main.provides = ["upload"];
     return main;
@@ -127,6 +128,8 @@ define(function(require, exports, module) {
         }
         
         function uploadFromDrop(dropEvent, targetPath) {
+            debugger;
+            
             uploadManager.batchFromDrop(dropEvent, function(err, batch, skipped) {
                 if (err) return onUploadError(err);
                 if (skipped && Object.keys(skipped).length) {

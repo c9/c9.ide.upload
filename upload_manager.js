@@ -52,7 +52,7 @@ define(function(require, module, exports) {
         
         function isSupported() {
             return (window.FormData);
-        };
+        }
         
         function upload(targetPath, batch, dialog, callback) {
             forEach(batch.getRoots(), function(root, next) {

@@ -225,12 +225,12 @@ define(function(require, exports, module) {
             }
         }
 
-        function folderDragLeave(node) {
+        function folderDragLeave(node){
             tree.tree.provider.setClass(node, "dragAppendUpload", false);
             dragContext.path = null;
         }
         
-        function folderDragEnter(node) {
+        function folderDragEnter(node){
             tree.tree.provider.setClass(node, "dragAppendUpload", true);
             dragContext.path = node.path;
         }
