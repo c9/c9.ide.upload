@@ -127,7 +127,23 @@ define(function(require, exports, module) {
             });
         }
         
+        function getEntries(e){
+            var first = e.dataTransfer.items[0];
+            var getAsEntry = first.getAsEntry || first.webkitGetAsEntry;
+                
+            return [].map.call(e.dataTransfer.items, function(item) {
+                return getAsEntry.call(item);
+            });
+        }
+        
         function uploadFromDrop(dropEvent, targetPath) {
+            if (emit("upload.drop", { 
+                files   : dropEvent.dataTransfer.files,
+                entries : getEntries(dropEvent), 
+                path    : targetPath 
+            }) === false)
+                return;
+                
             uploadManager.batchFromDrop(dropEvent, function(err, batch, skipped) {
                 if (err) return onUploadError(err);
                 if (skipped && Object.keys(skipped).length) {
@@ -137,9 +153,6 @@ define(function(require, exports, module) {
                         Object.keys(skipped).map(util.escapeXml).join("</br>")
                     );
                 }
-                
-                if (emit("upload.drop", { batch: batch, path: targetPath }) === false)
-                    return;
                 
                 uploadBatch(batch, targetPath);
             });
