@@ -128,8 +128,6 @@ define(function(require, exports, module) {
         }
         
         function uploadFromDrop(dropEvent, targetPath) {
-            debugger;
-            
             uploadManager.batchFromDrop(dropEvent, function(err, batch, skipped) {
                 if (err) return onUploadError(err);
                 if (skipped && Object.keys(skipped).length) {
@@ -139,6 +137,10 @@ define(function(require, exports, module) {
                         Object.keys(skipped).map(util.escapeXml).join("</br>")
                     );
                 }
+                
+                if (emit("upload.drop", { batch: batch, path: targetPath }) === false)
+                    return;
+                
                 uploadBatch(batch, targetPath);
             });
         }

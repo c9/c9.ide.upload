@@ -6,8 +6,9 @@ var SUPPORT_FOLDER_UPLOAD = (function() {
     return "webkitdirectory" in input || "directory" in input;
 })();
 
-function Batch(files) {
-    this.files = files;
+function Batch(files, entries) {
+    this.files   = files;
+    this.entries = entries;
 }
 
 Batch.prototype.hasDirectories = function() {
@@ -152,7 +153,7 @@ Batch.fromFileApi = function(entries, callback) {
         });
     }, function(err) {
         if (err) return callback(err);
-        callback(null, new Batch(files), skipped);
+        callback(null, new Batch(files, entries), skipped);
     });
 };
 

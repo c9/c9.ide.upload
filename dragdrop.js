@@ -17,6 +17,7 @@ define(function(require, exports, module) {
         
         var css      = require("text!./dragdrop.css");
         
+        var treeAsPane = options.treeAsPane;
         var dropbox, treeMouseHandler; 
         
         /***** Initialization *****/
@@ -83,12 +84,12 @@ define(function(require, exports, module) {
                 return;
             e.dataTransfer.dropEffect = "copy";
             var host = findHost(e.target);
-            if (!dragContext.mouseListener)
+            if (!dragContext.mouseListener && !treeAsPane)
                 window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
-            updateTreeDrag(e, host);
             updateUploadAreaDrag(host);
             updateTabDrag(host);
+            updateTreeDrag(e, host);
                 
             clearTimeout(dragContext.timer);
         }
@@ -153,15 +154,15 @@ define(function(require, exports, module) {
                 return true;
         }
         
-        function getDropbox() {
+        function getDropbox(title) {
             if (!dropbox) {
                 dropbox = document.createElement("div");
                 dropbox.className = "draganddrop";
 
                 var label = document.createElement("span");
-                label.textContent = "Drop a file here to open";
                 dropbox.appendChild(label);
             }
+            dropbox.firstChild.textContent = title || "Drop a file here to open";
             return dropbox;
         }
         
@@ -176,7 +177,7 @@ define(function(require, exports, module) {
                     return;
                 
                 var parent = pane.container;
-                dropbox = getDropbox();
+                dropbox = getDropbox(pane.dropboxTitle);
                 parent && parent.appendChild(dropbox);
                 apf.setStyleClass(dropbox, "over");
                 
@@ -208,6 +209,14 @@ define(function(require, exports, module) {
         function updateTreeDrag(e, host) {
             var online = c9.status & c9.STORAGE;
             if (online && host === tree.getElement("container")) {
+                if (treeAsPane)
+                    return updateTabDrag({ 
+                        cloud9pane: { 
+                            container: host.$ext,
+                            dropboxTitle: "Drop a file or folder"
+                        }
+                    });
+                
                 if (!treeMouseHandler.releaseMouse) {
                     treeMouseHandler.captureMouse(e);
                     treeMouseHandler.setState("drag");
