@@ -136,11 +136,12 @@ define(function(require, exports, module) {
             });
         }
         
-        function uploadFromDrop(dropEvent, targetPath) {
+        function uploadFromDrop(dropEvent, targetPath, type) {
             if (emit("upload.drop", { 
                 files   : dropEvent.dataTransfer.files,
                 entries : getEntries(dropEvent), 
-                path    : targetPath 
+                path    : targetPath,
+                type    : type
             }) === false)
                 return;
                 

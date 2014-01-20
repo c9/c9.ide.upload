@@ -122,7 +122,7 @@ define(function(require, exports, module) {
 
             var target = dragContext.path || dragContext.pane;
             if (target) {
-                upload.uploadFromDrop(e, target);
+                upload.uploadFromDrop(e, target, dragContext.pane ? "tab" : "tree");
                 apf.stopEvent(e);
             }
         }
