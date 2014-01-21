@@ -122,7 +122,8 @@ define(function(require, exports, module) {
 
             var target = dragContext.path || dragContext.pane;
             if (target) {
-                upload.uploadFromDrop(e, target, dragContext.pane ? "tab" : "tree");
+                upload.uploadFromDrop(e, target, 
+                    dragContext.pane && !target.isTree ? "tab" : "tree");
                 apf.stopEvent(e);
             }
         }
@@ -212,8 +213,9 @@ define(function(require, exports, module) {
                 if (treeAsPane)
                     return updateTabDrag({ 
                         cloud9pane: { 
-                            container: host.$ext,
-                            dropboxTitle: "Drop a file or folder"
+                            isTree       : true,
+                            container    : host.$ext,
+                            dropboxTitle : "Drop a file or folder"
                         }
                     });
                 
