@@ -155,7 +155,7 @@ define(function(require, exports, module) {
                     );
                 }
                 
-                uploadBatch(batch, targetPath);
+                uploadBatch(batch, targetPath.path || targetPath);
             });
         }
         

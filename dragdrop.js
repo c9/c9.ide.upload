@@ -16,6 +16,7 @@ define(function(require, exports, module) {
         var tabs     = imports.tabManager;
         
         var css      = require("text!./dragdrop.css");
+        var dirname  = require("path").dirname;
         
         var treeAsPane = options.treeAsPane;
         var dropbox, treeMouseHandler; 
@@ -210,14 +211,20 @@ define(function(require, exports, module) {
         function updateTreeDrag(e, host) {
             var online = c9.status & c9.STORAGE;
             if (online && host === tree.getElement("container")) {
-                if (treeAsPane)
+                if (treeAsPane) {
+                    var node = tree.selectedNode;
+                    if (!node.isFolder)
+                        node = dirname(node.path);
+                    
                     return updateTabDrag({ 
                         cloud9pane: { 
                             isTree       : true,
+                            path         : path,
                             container    : host.$ext,
                             dropboxTitle : "Drop a file or folder"
                         }
                     });
+                }
                 
                 if (!treeMouseHandler.releaseMouse) {
                     treeMouseHandler.captureMouse(e);
