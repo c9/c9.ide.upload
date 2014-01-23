@@ -415,7 +415,12 @@ define(function(require, exports, module) {
              * @param {HTMLInputElement} inputElement the upload input DOM 
              *   element
              */
-            uploadFromInput     : uploadFromInput
+            uploadFromInput     : uploadFromInput,
+            
+            /**
+             * 
+             */
+            getTargetFolder : getTargetFolder
         });
         
         register(null, {

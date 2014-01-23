@@ -87,7 +87,7 @@ define(function(require, exports, module) {
             if (!dragContext.mouseListener && !treeAsPane)
                 window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
-            updateUploadAreaDrag(host);
+            updateUploadAreaDrag(e.target.host);
             updateTabDrag(host);
             updateTreeDrag(e, host);
                 
@@ -198,7 +198,7 @@ define(function(require, exports, module) {
         function updateUploadAreaDrag(host) {
             if (host && host.$ext && host.$ext.id === "uploadDropArea") {
                 dragContext.uploadDropArea = host.$ext;
-                dragContext.path = "";
+                dragContext.path = upload.getTargetFolder().path;
                 apf.setStyleClass(dragContext.uploadDropArea, "over");
             } else if (dragContext.uploadDropArea) {
                 apf.setStyleClass(dragContext.uploadDropArea, null, ["over"]);
