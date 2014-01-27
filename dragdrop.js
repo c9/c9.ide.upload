@@ -46,7 +46,7 @@ define(function(require, exports, module) {
                 function updateDrag(ev) {
                     var selectedNodes = ev.dragInfo.selectedNodes;
                     var hasFile = selectedNodes && selectedNodes.some(function(node) {
-                        return!node.isFolder;
+                        return !node.isFolder;
                     });
                     var host = hasFile && findHost(ev.domEvent.target);
                     updateTabDrag(!ev.dragInfo.isInTree && host);
@@ -213,7 +213,7 @@ define(function(require, exports, module) {
             if (online && host === tree.getElement("container")) {
                 if (treeAsPane) {
                     var node = tree.selectedNode;
-                    if (!node.isFolder)
+                    if (node && !node.isFolder)
                         node = dirname(node.path);
                     
                     return updateTabDrag({ 
