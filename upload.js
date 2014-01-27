@@ -385,7 +385,7 @@ define(function(require, exports, module) {
         /***** Register and define API *****/
         
         /**
-         * Implements the file upload UI for Cloud9 IDE
+         * Implements the file upload UI for Cloud9
          * @singleton
          **/
         plugin.freezePublicAPI({
