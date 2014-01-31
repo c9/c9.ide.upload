@@ -140,11 +140,21 @@ define(function(require, exports, module) {
         // helper
         function findHost(el) {
             var treeEl = tree.getElement("container");
+            var treeParent = treeAsPane && treeEl.parentNode;
             while (el) {
                 var host = el.host;
                 if (host && (host.cloud9pane || host === treeEl))
                     return host;
-                if (el == dropbox)
+                if (host && (host === treeParent))
+                    return {
+                        cloud9pane: { 
+                            isTree       : true,
+                            container    : host.$ext,
+                            dropboxTitle : "Drop a file or folder"
+                        }
+                    };
+                
+                if (el === dropbox)
                     return {cloud9pane: dragContext.pane};
                 el = el.parentNode;
             }
@@ -211,21 +221,6 @@ define(function(require, exports, module) {
         function updateTreeDrag(e, host) {
             var online = c9.status & c9.STORAGE;
             if (online && host === tree.getElement("container")) {
-                if (treeAsPane) {
-                    var node = tree.selectedNode;
-                    if (node && !node.isFolder)
-                        node = dirname(node.path);
-                    
-                    return updateTabDrag({ 
-                        cloud9pane: { 
-                            isTree       : true,
-                            path         : path,
-                            container    : host.$ext,
-                            dropboxTitle : "Drop a file or folder"
-                        }
-                    });
-                }
-                
                 if (!treeMouseHandler.releaseMouse) {
                     treeMouseHandler.captureMouse(e);
                     treeMouseHandler.setState("drag");
