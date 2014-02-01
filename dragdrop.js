@@ -140,19 +140,21 @@ define(function(require, exports, module) {
         // helper
         function findHost(el) {
             var treeEl = tree.getElement("container");
-            var treeParent = treeAsPane && treeEl.parentNode;
+            if (treeAsPane) {
+                treeEl = treeEl.parentNode;
+            }
             while (el) {
                 var host = el.host;
-                if (host && (host.cloud9pane || host === treeEl))
+                if (host && (host.cloud9pane))
                     return host;
-                if (host && (host === treeParent))
-                    return {
+                if (host && (host === treeEl))
+                    return treeAsPane ? {
                         cloud9pane: { 
                             isTree       : true,
                             container    : host.$ext,
                             dropboxTitle : "Drop a file or folder"
                         }
-                    };
+                    } : host;
                 
                 if (el === dropbox)
                     return {cloud9pane: dragContext.pane};
