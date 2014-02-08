@@ -267,7 +267,10 @@ define(function(require, exports, module) {
         
         /***** Register and define API *****/
         
-        plugin.freezePublicAPI({});
+        plugin.freezePublicAPI({
+            get treeAsPane(){ return treeAsPane },
+            set treeAsPane(v){ treeAsPane = v; }
+        });
         
         register(null, {
             dragdrop: plugin
