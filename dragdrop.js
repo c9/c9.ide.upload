@@ -85,7 +85,7 @@ define(function(require, exports, module) {
                 return;
             e.dataTransfer.dropEffect = "copy";
             var host = findHost(e.target, e);
-            if (!dragContext.mouseListener && (!treeAsPane || e.shiftKey))
+            if (!dragContext.mouseListener && (!treeAsPane || e.ctrlKey))
                 window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
             updateUploadAreaDrag(e.target.host);
@@ -140,7 +140,7 @@ define(function(require, exports, module) {
         // helper
         function findHost(el, e) {
             var treeEl = tree.getElement("container");
-            if (treeAsPane && !e.shiftKey) {
+            if (treeAsPane && !e.ctrlKey) {
                 treeEl = treeEl.parentNode;
             }
             while (el) {
@@ -148,7 +148,7 @@ define(function(require, exports, module) {
                 if (host && (host.cloud9pane))
                     return host;
                 if (host && (host === treeEl))
-                    return treeAsPane && !e.shiftKey ? {
+                    return treeAsPane && !e.ctrlKey ? {
                         cloud9pane: { 
                             isTree       : true,
                             container    : host.$ext,
