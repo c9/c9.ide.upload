@@ -18,7 +18,7 @@ define(function(require, exports, module) {
         var css      = require("text!./dragdrop.css");
         var dirname  = require("path").dirname;
         
-        var treeAsPane = options.treeAsPane;
+        var treeAsPane = true || options.treeAsPane;
         var dropbox, treeMouseHandler; 
         
         /***** Initialization *****/
@@ -48,7 +48,7 @@ define(function(require, exports, module) {
                     var hasFile = selectedNodes && selectedNodes.some(function(node) {
                         return !node.isFolder;
                     });
-                    var host = hasFile && findHost(ev.domEvent.target);
+                    var host = hasFile && findHost(ev.domEvent.target, ev);
                     updateTabDrag(!ev.dragInfo.isInTree && host);
                 }
                 function treeDrop(ev) {
@@ -84,8 +84,8 @@ define(function(require, exports, module) {
             if (this.disableDropbox || !isFile(e))
                 return;
             e.dataTransfer.dropEffect = "copy";
-            var host = findHost(e.target);
-            if (!dragContext.mouseListener && !treeAsPane)
+            var host = findHost(e.target, e);
+            if (!dragContext.mouseListener && (!treeAsPane || e.shiftKey))
                 window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
             updateUploadAreaDrag(e.target.host);
@@ -138,9 +138,9 @@ define(function(require, exports, module) {
         }
         
         // helper
-        function findHost(el) {
+        function findHost(el, e) {
             var treeEl = tree.getElement("container");
-            if (treeAsPane) {
+            if (treeAsPane && !e.shiftKey) {
                 treeEl = treeEl.parentNode;
             }
             while (el) {
@@ -148,7 +148,7 @@ define(function(require, exports, module) {
                 if (host && (host.cloud9pane))
                     return host;
                 if (host && (host === treeEl))
-                    return treeAsPane ? {
+                    return treeAsPane && !e.shiftKey ? {
                         cloud9pane: { 
                             isTree       : true,
                             container    : host.$ext,
@@ -267,10 +267,7 @@ define(function(require, exports, module) {
         
         /***** Register and define API *****/
         
-        plugin.freezePublicAPI({
-            get treeAsPane(){ return treeAsPane },
-            set treeAsPane(v){ treeAsPane = v; }
-        });
+        plugin.freezePublicAPI({});
         
         register(null, {
             dragdrop: plugin
