@@ -18,7 +18,7 @@ define(function(require, exports, module) {
         var css      = require("text!./dragdrop.css");
         var dirname  = require("path").dirname;
         
-        var treeAsPane = true || options.treeAsPane;
+        var treeAsPane = options.treeAsPane;
         var dropbox, treeMouseHandler; 
         
         /***** Initialization *****/
@@ -81,23 +81,27 @@ define(function(require, exports, module) {
         
         function dragEnter(e) {
             apf.preventDefault(e);
-            if (this.disableDropbox || !isFile(e))
+            if (plugin.disableDropbox || !isFile(e))
                 return;
-            e.dataTransfer.dropEffect = "copy";
             var host = findHost(e.target, e);
             if (!dragContext.mouseListener && (!treeAsPane || e.ctrlKey))
                 window.addEventListener("mousemove", clearDrag, true);
             // TODO open tree panel when hoverng over the button
             updateUploadAreaDrag(e.target.host);
-            updateTabDrag(host);
             updateTreeDrag(e, host);
+            updateTabDrag(host);
                 
             clearTimeout(dragContext.timer);
+            
+            dragContext.dropEffect = "copy";
+            if (treeAsPane && dragContext.pane && dragContext.pane.isTree)
+                dragContext.dropEffect = "link";
+            e.dataTransfer.dropEffect = dragContext.dropEffect;
         }
         
         function dragLeave(e) {
             apf.preventDefault(e);
-            if (this.disableDropbox)
+            if (plugin.disableDropbox)
                 return;
                 
             clearTimeout(dragContext.timer);
@@ -106,19 +110,27 @@ define(function(require, exports, module) {
         
         function dragOver(e) {
             apf.preventDefault(e);
-            if (this.disableDropbox || !isFile(e))
+            if (plugin.disableDropbox || !isFile(e))
                 return;
+            
+            if (treeAsPane && e.ctrlKey != dragContext.ctrlKey) {
+                var pane = dragContext.pane;
+                if (pane && pane.isTree || dragContext.path) {
+                    dragEnter(e);
+                }
+            }
+            
             if (treeMouseHandler && treeMouseHandler.$onCaptureMouseMove)
                 treeMouseHandler.$onCaptureMouseMove(e);
             if (dragContext.timer)
                 dragContext.timer = clearTimeout(dragContext.timer);
-            e.dataTransfer.dropEffect = "copy";
+            e.dataTransfer.dropEffect = dragContext.dropEffect;
         }
         
         function dragDrop(e) {
             apf.preventDefault(e);
             setTimeout(clearDrag);
-            if (this.disableDropbox)
+            if (plugin.disableDropbox)
                 return;
 
             var target = dragContext.path || dragContext.pane;
@@ -139,25 +151,31 @@ define(function(require, exports, module) {
         
         // helper
         function findHost(el, e) {
+            var ctrlKey = dragContext.ctrlKey = e.ctrlKey;
             var treeEl = tree.getElement("container");
-            if (treeAsPane && !e.ctrlKey) {
+            if (treeAsPane && !ctrlKey) {
                 treeEl = treeEl.parentNode;
             }
+            
             while (el) {
                 var host = el.host;
                 if (host && (host.cloud9pane))
                     return host;
                 if (host && (host === treeEl))
-                    return treeAsPane && !e.ctrlKey ? {
-                        cloud9pane: { 
+                    return treeAsPane && !ctrlKey ? {
+                        cloud9pane: {
                             isTree       : true,
                             container    : host.$ext,
                             dropboxTitle : "Drop a file or folder"
                         }
                     } : host;
                 
-                if (el === dropbox)
+                if (el === dropbox) {
+                    if (treeAsPane && ctrlKey && dragContext.pane.isTree)
+                        return treeEl;
                     return {cloud9pane: dragContext.pane};
+                }
+                
                 el = el.parentNode;
             }
         }
