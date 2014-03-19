@@ -44,10 +44,10 @@ define(function(require, exports, module) {
             loaded = true;
             
             // Menus
-            menus.addItemByPath("File/~", new ui.divider(), 350, plugin);
+            menus.addItemByPath("File/~", new ui.divider(), 1200, plugin);
             menus.addItemByPath("File/Upload Local Files...", new ui.item({
                 onclick : showUploadWindow
-            }), 370, plugin);
+            }), 1300, plugin);
 
             uploadManager.on("addJob", onAddUploadJob);
         }
