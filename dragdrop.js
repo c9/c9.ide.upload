@@ -258,14 +258,14 @@ define(function(require, exports, module) {
             }
         }
 
-        function folderDragLeave(node){
-            tree.tree.provider.setClass(node, "dragAppendUpload", false);
+        function folderDragLeave(e){
+            tree.tree.provider.setClass(e.hoverNode, "dragAppendUpload", false);
             dragContext.path = null;
         }
         
-        function folderDragEnter(node){
-            tree.tree.provider.setClass(node, "dragAppendUpload", true);
-            dragContext.path = node.path;
+        function folderDragEnter(e){
+            tree.tree.provider.setClass(e.hoverNode, "dragAppendUpload", true);
+            dragContext.path = e.hoverNode.path;
         }
         
         /***** Lifecycle *****/
