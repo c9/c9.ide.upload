@@ -1,4 +1,4 @@
-/*global describe it before after  =*/
+/*global describe it before after = */
 
 "use client";
 
@@ -8,13 +8,13 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     
     expect.setupArchitectTest([
         {
-            packagePath : "plugins/c9.core/c9",
-            startdate   : new Date(),
-            debug       : true,
-            staticUrl   : "/static/plugins",
-            hosted      : true,
-            local       : false,
-            projectName : "upload_test"
+            packagePath: "plugins/c9.core/c9",
+            startdate: new Date(),
+            debug: true,
+            staticUrl: "/static/plugins",
+            hosted: true,
+            local: false,
+            projectName: "upload_test"
         },
         
         "plugins/c9.core/ext",
@@ -25,8 +25,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.core/settings",
         "plugins/c9.core/api.js",
         {
-            packagePath  : "plugins/c9.ide.ui/ui",
-            staticPrefix : "plugins/c9.ide.ui"
+            packagePath: "plugins/c9.ide.ui/ui",
+            staticPrefix: "plugins/c9.ide.ui"
         },
         "plugins/c9.ide.tree/tree",
         "plugins/c9.ide.ui/menus",
@@ -65,33 +65,33 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         
         // Mock plugins
         {
-            consumes : ["apf", "ui", "Plugin"],
-            provides : [
+            consumes: ["apf", "ui", "Plugin"],
+            provides: [
                 "commands", "commands", "layout", "watcher", "clipboard",
                 "save", "panels", "tabManager", "preferences", "anims",
                 "auth.bootstrap", "info", "panels", "Panel", "proc", 
                 "dialog.error"
             ],
-            setup    : expect.html.mocked
+            setup: expect.html.mocked
         },
         {
-            consumes : ["upload", "dragdrop", "dialog.fileoverwrite"],
-            provides : [],
-            setup    : main
+            consumes: ["upload", "dragdrop", "dialog.fileoverwrite"],
+            provides: [],
+            setup: main
         }
     ], architect);
     
     function main(options, imports, register) {
-        var upload          = imports.upload;
+        var upload = imports.upload;
         var overwriteDialog = imports["dialog.fileoverwrite"];
         
-        // expect.html.setConstructor(function(tab){
+        // expect.html.setConstructor(function(tab) {
         //     if (typeof tab == "object")
         //         return tab.pane.aml.getPage("editor::" + tab.editorType).$ext;
         // });
         
         describe('upload', function() {
-            before(function(done){
+            before(function(done) {
                 apf.config.setProperty("allow-select", false);
                 apf.config.setProperty("allow-blur", false);
                 
@@ -122,7 +122,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 });
             });
             
-            if (!onload.remain){
+            if (!onload.remain) {
                 describe("unload()", function(){
                     it('should destroy all ui elements when it is unloaded', function(done) {
                         upload.unload();
@@ -130,7 +130,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                     });
                 });
                 
-                after(function(done){
+                after(function(done) {
                     document.body.style.marginBottom = "";
                     done();
                 });

@@ -7,7 +7,7 @@ var SUPPORT_FOLDER_UPLOAD = (function() {
 })();
 
 function Batch(files, entries) {
-    this.files   = files;
+    this.files = files;
     this.entries = entries;
 }
 

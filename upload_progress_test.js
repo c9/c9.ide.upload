@@ -1,4 +1,4 @@
-/*global describe it before after  =*/
+/*global describe it before after = */
 
 "use client";
 
@@ -8,12 +8,12 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     
     expect.setupArchitectTest([
         {
-            packagePath : "plugins/c9.core/c9",
-            startdate   : new Date(),
-            debug       : true,
-            staticUrl   : "/static/plugins",
-            hosted      : true,
-            local       : false
+            packagePath: "plugins/c9.core/c9",
+            startdate: new Date(),
+            debug: true,
+            staticUrl: "/static/plugins",
+            hosted: true,
+            local: false
         },
         
         "plugins/c9.core/ext",
@@ -25,8 +25,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.core/api",
         "plugins/c9.ide.ui/anims",
         {
-            packagePath  : "plugins/c9.ide.ui/ui",
-            staticPrefix : "plugins/c9.ide.ui"
+            packagePath: "plugins/c9.ide.ui/ui",
+            staticPrefix: "plugins/c9.ide.ui"
         },
         {
             packagePath: "plugins/c9.ide.tree/tree",
@@ -59,18 +59,18 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         
         // Mock plugins
         {
-            consumes : ["apf", "ui", "Plugin"],
-            provides : [
+            consumes: ["apf", "ui", "Plugin"],
+            provides: [
                 "commands", "commands", "layout", "watcher", 
                 "save", "panels", "tabManager", "preferences", "clipboard",
                 "auth.bootstrap", "info", "Panel", "proc", "dialog.error"
             ],
-            setup    : expect.html.mocked
+            setup: expect.html.mocked
         },
         {
-            consumes : ["upload.progress", "upload.manager", "settings"],
-            provides : [],
-            setup    : main
+            consumes: ["upload.progress", "upload.manager", "settings"],
+            provides: [],
+            setup: main
         }
     ], architect);
     
@@ -79,7 +79,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         var uploadManager = imports["upload.manager"];
         
         describe('upload', function() {
-            before(function(done){
+            before(function(done) {
                 imports.settings.set("general/@animateui", true);
                 apf.config.setProperty("allow-select", false);
                 apf.config.setProperty("allow-blur", false);
@@ -106,7 +106,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 });
 
             });
-            if (!onload.remain){
+            if (!onload.remain) {
                 describe("unload()", function(){
                     it('should destroy all ui elements when it is unloaded', function(done) {
                         progress.unload();
@@ -115,7 +115,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                     });
                 });
                 
-                after(function(done){
+                after(function(done) {
                     document.body.style.marginBottom = "";
                     done();
                 });

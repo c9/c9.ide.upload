@@ -2,14 +2,14 @@ define(function(require, module, exports) {
 "use strict";
 
 var EventEmitter = require("events").EventEmitter;
-var path         = require("path");
+var path = require("path");
 
-var STATE_NEW       = "new";
+var STATE_NEW = "new";
 var STATE_UPLOADING = "uploading";
-var STATE_PAUSED    = "paused";
-var STATE_RESUME    = "resume";
-var STATE_DONE      = "done";
-var STATE_ERROR     = "error";
+var STATE_PAUSED = "paused";
+var STATE_RESUME = "resume";
+var STATE_DONE = "done";
+var STATE_ERROR = "error";
 
 function UploadJob(file, fullPath, manager, workerPrefix) {
     this.fullPath = fullPath;

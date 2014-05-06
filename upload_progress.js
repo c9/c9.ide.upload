@@ -6,23 +6,23 @@ define(function(require, exports, module) {
     return main;
     
     function main(options, imports, register) {
-        var Plugin        = imports.Plugin;
-        var ui            = imports.ui;
-        var layout        = imports.layout;
-        var tree          = imports.tree;
-        var anims         = imports.anims;
+        var Plugin = imports.Plugin;
+        var ui = imports.ui;
+        var layout = imports.layout;
+        var tree = imports.tree;
+        var anims = imports.anims;
         var uploadManager = imports["upload.manager"];
         
-        var css           = require("text!./upload_progress.css");
-        var TreeData      = require("ace_tree/data_provider");
-        var Tree          = require("ace_tree/tree");
+        var css = require("text!./upload_progress.css");
+        var TreeData = require("ace_tree/data_provider");
+        var Tree = require("ace_tree/tree");
         
         var boxUploadActivityMarkup = require("text!./markup/box_upload_activity.xml");
         
         /***** Initialization *****/
         
         var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit   = plugin.getEmitter();
+        var emit = plugin.getEmitter();
         
         var list, boxUploadActivity, mdlUploadActivity;
         
@@ -45,8 +45,8 @@ define(function(require, exports, module) {
             
             // Import Skin
             ui.insertSkin({
-                name         : "uploadfiles",
-                data         : require("text!./markup/skin.xml"),
+                name: "uploadfiles",
+                data: require("text!./markup/skin.xml"),
                 "media-path" : options.staticPrefix + "/images/",
                 "icon-path"  : options.staticPrefix + "/icons/"
             }, plugin);
@@ -56,12 +56,12 @@ define(function(require, exports, module) {
         
             boxUploadActivity = plugin.getElement("boxUploadActivity");
         
-            tree.getElement("container", function(treeContainer){
+            tree.getElement("container", function(treeContainer) {
                 var p = treeContainer.parentNode;
                 var box = new ui.vsplitbox({
-                    id       : "vboxTreeContainer",
-                    anchors  : "0 0 0 0",
-                    splitter : false
+                    id: "vboxTreeContainer",
+                    anchors: "0 0 0 0",
+                    splitter: false
                 });
                 p.insertBefore(box, treeContainer);
                 box.appendChild(treeContainer);
@@ -133,9 +133,9 @@ define(function(require, exports, module) {
             if (!panelVisible) return;
             panelVisible = false;
             anims.animateSplitBoxNode(list, {
-                height         : "22px",
-                duration       : 0.2,
-                timingFunction : "ease-in-out"
+                height: "22px",
+                duration: 0.2,
+                timingFunction: "ease-in-out"
             }); 
         }
         
@@ -144,9 +144,9 @@ define(function(require, exports, module) {
             panelVisible = false;
             if (!panel.$amlDestroyed) {
                 anims.animateSplitBoxNode(panel, {
-                    height         : "0px",
-                    duration       : 0.2,
-                    timingFunction : "ease-in-out"
+                    height: "0px",
+                    duration: 0.2,
+                    timingFunction: "ease-in-out"
                 });
             }
         }
@@ -158,9 +158,9 @@ define(function(require, exports, module) {
             panel.show();
             panel.$ext.style.height = "22px";
             anims.animateSplitBoxNode(panel, {
-                height         : "175px",
-                duration       : 0.2,
-                timingFunction : "ease-in-out"
+                height: "175px",
+                duration: 0.2,
+                timingFunction: "ease-in-out"
             }, function() {
                 tree && tree.resize();
             });
@@ -241,7 +241,7 @@ define(function(require, exports, module) {
         plugin.on("disable", function() {
         });
         plugin.on("unload", function() {
-            drawn  = false;
+            drawn = false;
         });
         
         /***** Register and define API *****/

@@ -10,31 +10,31 @@ define(function(require, exports, module) {
     return main;
     
     function main(options, imports, register) {
-        var util          = imports.util;
-        var Plugin        = imports.Plugin;
-        var ui            = imports.ui;
-        var menus         = imports.menus;
-        var fsCache       = imports["fs.cache"];
-        var tree          = imports.tree;
+        var util = imports.util;
+        var Plugin = imports.Plugin;
+        var ui = imports.ui;
+        var menus = imports.menus;
+        var fsCache = imports["fs.cache"];
+        var tree = imports.tree;
         var uploadManager = imports["upload.manager"];
-        var question      = imports["dialog.fileoverwrite"].show;
-        var alert         = imports["dialog.alert"].show;
-        var apf           = imports.apf;
-        var tabManager    = imports.tabManager;
+        var question = imports["dialog.fileoverwrite"].show;
+        var alert = imports["dialog.alert"].show;
+        var apf = imports.apf;
+        var tabManager = imports.tabManager;
         
-        var path          = require("path");
-        var css           = require("text!./upload.css");
+        var path = require("path");
+        var css = require("text!./upload.css");
         
         var winUploadFilesMarkup = require("text!./markup/win_upload_files.xml");
         
         /***** Initialization *****/
         
-        var MAX_OPEN_COUNT  = options.maxOpenCount || 10;
-        var MAX_FILE_COUNT  = options.maxFileCount || 20000;
+        var MAX_OPEN_COUNT = options.maxOpenCount || 10;
+        var MAX_FILE_COUNT = options.maxFileCount || 20000;
         var MAX_UPLOAD_SIZE = options.maxUploadSize || 60 * 1024 * 1024;
 
         var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit   = plugin.getEmitter();
+        var emit = plugin.getEmitter();
         
         var winUploadFiles;
         
@@ -46,7 +46,7 @@ define(function(require, exports, module) {
             // Menus
             menus.addItemByPath("File/~", new ui.divider(), 1200, plugin);
             menus.addItemByPath("File/Upload Local Files...", new ui.item({
-                onclick : showUploadWindow
+                onclick: showUploadWindow
             }), 1300, plugin);
 
             uploadManager.on("addJob", onAddUploadJob);
@@ -72,8 +72,8 @@ define(function(require, exports, module) {
                 var node = fsCache.findNode(job.fullPath);
                 if (!node) {
                     node = fsCache.createNode(job.fullPath, {
-                        mime : job.file.type,
-                        size : job.file.size || 0
+                        mime: job.file.type,
+                        size: job.file.size || 0
                     });
                 }
                 node.status = "predicted";
@@ -127,7 +127,7 @@ define(function(require, exports, module) {
             });
         }
         
-        function getEntries(e){
+        function getEntries(e) {
             var first = e.dataTransfer.items[0];
             var getAsEntry = first.getAsEntry || first.webkitGetAsEntry;
                 
@@ -138,10 +138,10 @@ define(function(require, exports, module) {
         
         function uploadFromDrop(dropEvent, targetPath, type) {
             if (emit("upload.drop", { 
-                files   : dropEvent.dataTransfer.files,
-                entries : getEntries(dropEvent), 
-                path    : targetPath,
-                type    : type
+                files: dropEvent.dataTransfer.files,
+                entries: getEntries(dropEvent), 
+                path: targetPath,
+                type: type
             }) === false)
                 return;
                 
@@ -392,14 +392,14 @@ define(function(require, exports, module) {
             /**
              * Display the file upload window
              */
-            showUploadWindow    : showUploadWindow,
+            showUploadWindow: showUploadWindow,
             
             /**
              * Display the file exists dialog.
              * Only used for unit testing
              * @ignore
              */
-            fileExistsDialog    : fileExistsDialog,
+            fileExistsDialog: fileExistsDialog,
             
             /**
              * Upload files from a native drag and drop operation
@@ -407,7 +407,7 @@ define(function(require, exports, module) {
              * @param {DragEvent} dropEvent native DOM drop event
              * @param {String} targetPath path where to upload the files
              */
-            uploadFromDrop      : uploadFromDrop,
+            uploadFromDrop: uploadFromDrop,
             
             /**
              * Upload files from an file upload input element
@@ -415,12 +415,12 @@ define(function(require, exports, module) {
              * @param {HTMLInputElement} inputElement the upload input DOM 
              *   element
              */
-            uploadFromInput     : uploadFromInput,
+            uploadFromInput: uploadFromInput,
             
             /**
              * 
              */
-            getTargetFolder : getTargetFolder
+            getTargetFolder: getTargetFolder
         });
         
         register(null, {

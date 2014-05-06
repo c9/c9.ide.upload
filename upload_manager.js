@@ -17,27 +17,27 @@ define(function(require, module, exports) {
      */
 
     function main(options, imports, register) {
-        var fs     = imports.fs;
-        var vfs    = imports.vfs;
+        var fs = imports.fs;
+        var vfs = imports.vfs;
         var Plugin = imports.Plugin;
         
-        var UploadBatch  = require("./batch");
-        var UploadJob    = require("./upload_job");
-        var path         = require("path");
+        var UploadBatch = require("./batch");
+        var UploadJob = require("./upload_job");
+        var path = require("path");
         
         /***** Initialization *****/
             
-        var STATE_NEW       = "new";
+        var STATE_NEW = "new";
         var STATE_UPLOADING = "uploading";
-        var STATE_PAUSED    = "paused";
-        var STATE_RESUME    = "resume";
-        var STATE_DONE      = "done";
-        var STATE_ERROR     = "error";
+        var STATE_PAUSED = "paused";
+        var STATE_RESUME = "resume";
+        var STATE_DONE = "done";
+        var STATE_ERROR = "error";
         
         /***** Methods *****/
         
         var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit   = plugin.getEmitter();
+        var emit = plugin.getEmitter();
 
         var jobs, concurrentUploads, timer;
 
@@ -46,8 +46,8 @@ define(function(require, module, exports) {
             if (loaded) return false;
             loaded = true;
             
-            jobs               = [];
-            concurrentUploads  = options.concurrentUploads || 6;
+            jobs = [];
+            concurrentUploads = options.concurrentUploads || 6;
         }
         
         function isSupported() {
@@ -80,13 +80,13 @@ define(function(require, module, exports) {
                 });
             }, callback);
             
-            var toAll  = false;
+            var toAll = false;
             var action = "";
             function getAction(batch, root, callback) {
                 if (toAll) return callback(action);
                 
                 dialog(batch, targetPath, root, function(_action, _toAll) {
-                    toAll  = _toAll;
+                    toAll = _toAll;
                     action = _action;
                     
                     callback(action); 
@@ -328,7 +328,7 @@ define(function(require, module, exports) {
              */
             get jobs() { return jobs; },
             
-            _events : [
+            _events: [
                 /** 
                  * Fires when an upload is started. Passes a Job instance
                  * @event addJob

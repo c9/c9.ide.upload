@@ -1,4 +1,4 @@
-/*global describe it before after  =*/
+/*global describe it before after = */
 
 require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai) {
     var expect = chai.expect;
@@ -6,12 +6,12 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
     
     expect.setupArchitectTest([
         {
-            packagePath : "plugins/c9.core/c9",
-            startdate   : new Date(),
-            debug       : true,
-            staticUrl   : "/static/plugins",
-            hosted      : true,
-            local       : false
+            packagePath: "plugins/c9.core/c9",
+            startdate: new Date(),
+            debug: true,
+            staticUrl: "/static/plugins",
+            hosted: true,
+            local: false
         },
         "plugins/c9.core/ext",
         "plugins/c9.core/http",
@@ -30,17 +30,17 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         
         // Mock plugins
         {
-            consumes : [],
-            provides : [
+            consumes: [],
+            provides: [
                 "auth.bootstrap", "info", "dialog.error", "api"
             ],
-            setup    : expect.html.mocked
+            setup: expect.html.mocked
         },
         
         {
-            consumes : ["upload.manager", "fs"],
-            provides : [],
-            setup    : main
+            consumes: ["upload.manager", "fs"],
+            provides: [],
+            setup: main
         }
     ], architect);
     

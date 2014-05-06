@@ -8,15 +8,15 @@ define(function(require, exports, module) {
     return main;
 
     function main(options, imports, register) {
-        var Plugin   = imports.Plugin;
-        var upload   = imports.upload;
-        var tree     = imports.tree;
-        var ui       = imports.ui;
-        var c9       = imports.c9;
-        var tabs     = imports.tabManager;
+        var Plugin = imports.Plugin;
+        var upload = imports.upload;
+        var tree = imports.tree;
+        var ui = imports.ui;
+        var c9 = imports.c9;
+        var tabs = imports.tabManager;
         
-        var css      = require("text!./dragdrop.css");
-        var dirname  = require("path").dirname;
+        var css = require("text!./dragdrop.css");
+        var dirname = require("path").dirname;
         
         var treeAsPane = options.treeAsPane;
         var dropbox, treeMouseHandler; 
@@ -164,9 +164,9 @@ define(function(require, exports, module) {
                 if (host && (host === treeEl))
                     return treeAsPane && !ctrlKey ? {
                         cloud9pane: {
-                            isTree       : true,
-                            container    : host.$ext,
-                            dropboxTitle : "Drop a file or folder"
+                            isTree: true,
+                            container: host.$ext,
+                            dropboxTitle: "Drop a file or folder"
                         }
                     } : host;
                 
@@ -258,12 +258,12 @@ define(function(require, exports, module) {
             }
         }
 
-        function folderDragLeave(e){
+        function folderDragLeave(e) {
             tree.tree.provider.setClass(e.hoverNode, "dragAppendUpload", false);
             dragContext.path = null;
         }
         
-        function folderDragEnter(e){
+        function folderDragEnter(e) {
             tree.tree.provider.setClass(e.hoverNode, "dragAppendUpload", true);
             dragContext.path = e.hoverNode.path;
         }
