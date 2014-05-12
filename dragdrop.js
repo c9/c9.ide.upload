@@ -37,7 +37,7 @@ define(function(require, exports, module) {
             document.addEventListener("dragover", dragOver, true);
             document.addEventListener("drop", dragDrop, true);
             
-            tree.on("draw", function() {
+            tree.once("draw", function() {
                 var acetree = tree.tree;
                 treeMouseHandler = acetree.$mouseHandler;
                 acetree.on("dragIn", updateDrag);
