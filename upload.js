@@ -128,6 +128,10 @@ define(function(require, exports, module) {
         }
         
         function getEntries(e) {
+            // items is undefined on firefox 30
+            if (!e.dataTransfer.items)
+                return [];
+            
             var first = e.dataTransfer.items[0];
             var getAsEntry = first.getAsEntry || first.webkitGetAsEntry;
                 
