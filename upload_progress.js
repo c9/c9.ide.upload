@@ -135,7 +135,10 @@ define(function(require, exports, module) {
             anims.animateSplitBoxNode(list, {
                 height: "22px",
                 duration: 0.2,
-                timingFunction: "ease-in-out"
+                timingFunction: "ease-in-out",
+                onfinish: function(){
+                    tree && tree.resize();
+                }
             }); 
         }
         
