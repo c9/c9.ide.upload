@@ -136,9 +136,8 @@ define(function(require, exports, module) {
                 height: "22px",
                 duration: 0.2,
                 timingFunction: "ease-in-out",
-                onfinish: function(){
-                    tree && tree.resize();
-                }
+            }, function(){
+                tree && tree.resize();
             }); 
         }
         
