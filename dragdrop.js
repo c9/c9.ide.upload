@@ -240,7 +240,12 @@ define(function(require, exports, module) {
         // tree
         function updateTreeDrag(e, host) {
             var online = c9.status & c9.STORAGE;
-            if (online && host === tree.getElement("container")) {
+            var isOnlineTree;
+            try { 
+                isOnlineTree = online && host === tree.getElement("container");
+            } catch(e){}
+            
+            if (isOnlineTree) {
                 if (!treeMouseHandler.releaseMouse) {
                     treeMouseHandler.captureMouse(e);
                     treeMouseHandler.setState("drag");
