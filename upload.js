@@ -30,8 +30,8 @@ define(function(require, exports, module) {
         /***** Initialization *****/
         
         var MAX_OPEN_COUNT = options.maxOpenCount || 10;
-        var MAX_FILE_COUNT = options.maxFileCount || 20000;
-        var MAX_UPLOAD_SIZE = options.maxUploadSize || 60 * 1024 * 1024;
+        var MAX_FILE_COUNT = options.maxFileCount || 100000;
+        var MAX_UPLOAD_SIZE = options.maxUploadSize || Infinity;
 
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit = plugin.getEmitter();
