@@ -189,11 +189,19 @@ function walkFiles(entry, onEntry, callback) {
         onEntry(entry, function(err) {
             if (err) return callback(err);
             
-            entry.createReader().readEntries(function(entries) {
+            var reader = entry.createReader();
+            function handleEntries(entries) {
+                if (!entries.length)
+                    return callback();
                 forEach(entries, function(entry, next) {
                     walkFiles(entry, onEntry, next);
-                }, callback);
-            }, callback);
+                }, readMore);
+            }
+            function readMore() {
+                // Keep calling readEntries() until no more results are returned.
+                reader.readEntries(handleEntries, callback);
+            }
+            readMore();
         });
     }
 }
