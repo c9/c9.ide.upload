@@ -16,7 +16,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             local: false
         },
         "plugins/c9.core/ext",
-        "plugins/c9.core/http",
+        "plugins/c9.core/http-xhr",
         "plugins/c9.vfs.client/vfs_client",
         "plugins/c9.vfs.client/endpoint",
         "plugins/c9.ide.auth/auth",
