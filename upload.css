@@ -17,7 +17,7 @@
 .uploadDropArea when(@upload-win-flat = false) {
     height: 75px;
     width: 315px;
-    margin: 10px;
+    margin: 10px 0 10px 0;
     border-radius: 10px;
     
     padding-top: 28px;
@@ -121,8 +121,10 @@
 }
 
 .upload-window{
-    box-shadow: 0 0 30px rgba(0,0,0,0.2) !important;
     width: @upload-win-width;
+}
+.upload-window when(@upload-win-flat = true){
+    box-shadow: 0 0 30px rgba(0,0,0,0.2) !important;
 }
 
 .upload-window .divider when(@upload-win-flat = false){
