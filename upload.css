@@ -123,9 +123,6 @@
 .upload-window{
     width: @upload-win-width;
 }
-.upload-window when(@upload-win-flat = true){
-    box-shadow: 0 0 30px rgba(0,0,0,0.2) !important;
-}
 
 .upload-window .divider when(@upload-win-flat = false){
     display: none;
