@@ -89,49 +89,37 @@ define(function(require, module, exports) {
                     toAll = _toAll;
                     action = _action;
                     
-                    callback(action); 
+                    callback(action);
                 });
             }
             
             function uploadFiles(root, doOverwrite, callback) {
                 var files = batch.subTree(root);
-                
-                overwrite();
-                
-                function overwrite() {
-                    if (doOverwrite && (files.length !== 1 || files[0].name !== root))
-                        fs.rmdir(path.join(targetPath, root), {recursive: true}, upload);
-                    else
-                        upload();
-                }
                     
-                function upload(err) {
-                    if (err) return callback(err);
-                    
-                    var uploaded = 0;
-                    files.forEach(function(file) {
-                        var job =  uploadFile(file, path.join(targetPath, file.fullPath));
-                        file.job = job;
-                        job.on("changeState", function(e) {
-                            if (e.state == STATE_DONE || e.state == STATE_ERROR) {
-                                uploaded++;
-                                
-                                if (uploaded == files.length)
-                                    emit("batchDone", { batch: batch });
-                            }
-                        });
+                var uploaded = 0;
+                files.forEach(function(file) {
+                    var job =  uploadFile(file, path.join(targetPath, file.fullPath));
+                    file.job = job;
+                    job.checkOverwrite = doOverwrite && !toAll;
+                    job.on("changeState", function(e) {
+                        if (e.state == STATE_DONE || e.state == STATE_ERROR) {
+                            uploaded++;
+                            
+                            if (uploaded == files.length)
+                                emit("batchDone", { batch: batch });
+                        }
                     });
-                    
-                    callback();
-                }
+                });
+                
+                callback();
             }
-        };
+        }
         
         function _createJob(file, fullPath) {
             var job = new UploadJob(file, fullPath, plugin, options.workerPrefix);
             job.vfs = vfs;
             return job;
-        };
+        }
         
         function uploadFile(file, fullPath) {
             var job = _createJob(file, fullPath);
@@ -143,19 +131,19 @@ define(function(require, module, exports) {
             // async to give caller a chance to attach event listeners
             _checkAsync();
             return job;
-        };
+        }
 
         function batchFromInput(inputEl, callback) {
             return UploadBatch.fromInput(inputEl, callback);
-        };
+        }
         
         function batchFromDrop(dropEvent, callback) {
             return UploadBatch.fromDrop(dropEvent, callback);
-        };
+        }
         
         function batchFromFileApi(entries, callback) {
             return UploadBatch.fromFileApi(entries, callback);
-        };
+        }
         
         function jobById(id) {
             for (var i = 0; i < jobs.length; i++) {
@@ -164,10 +152,10 @@ define(function(require, module, exports) {
                     return job;
                 }
             }
-        };
+        }
         
         function checkSync() {
-            var wip = []
+            var wip = [];
             var done = [];
             var candidates = [];
             for (var i = 0; i < jobs.length; i++) {
@@ -209,7 +197,7 @@ define(function(require, module, exports) {
                 job._startUpload();
             }
             timer = null;
-        };
+        }
 
         function _checkAsync() {
             if (!timer)
