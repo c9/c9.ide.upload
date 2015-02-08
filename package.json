@@ -9,17 +9,15 @@
         "url": "http://github.com/c9/c9.ide.upload.git"
     },
     "plugins": {
-        "plugin": {
-            "dragdrop": {},
-            "upload": {},
-            "upload_manager": {},
-            "upload_progress": {}
-        }
+        "dragdrop": {},
+        "upload": {},
+        "upload_manager": {},
+        "upload_progress": {}
     },
     "categories": [
         "core"
     ],
     "licenses": [
-        ""
+        "MIT"
     ]
 }
