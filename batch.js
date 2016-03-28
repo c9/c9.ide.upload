@@ -126,7 +126,7 @@ Batch.fromInput = function(inputEl, callback) {
     var batch = new Batch(files);
     batch._detectDirectories(function(err) {
         callback(err, batch);
-    });        
+    });
 };
 
 Batch.fromFileApi = function(entries, callback) {
@@ -162,6 +162,9 @@ Batch.fromDrop = function(dropEvent, callback) {
     if (!dataTransfer)
         return callback(null, new Batch([]));
     
+    if (dataTransfer.getFilesAndDirectories)
+       return Batch.fromMozFileApi(dataTransfer, callback);
+    
     if (!dataTransfer.items)
         return Batch.fromInput(dataTransfer, callback);
         
@@ -177,6 +180,38 @@ Batch.fromDrop = function(dropEvent, callback) {
     
     Batch.fromFileApi(entries, callback);
 };
+
+Batch.fromMozFileApi = function(dataTransfer, callback) {
+    var files = [];
+    var pending = 0;
+    // requires dom.input.dirpicker true in about:config
+    var walkdDirs = function(entries, parentPath) {
+        entries.forEach(function(entry) {
+            var name = entry.name;
+            if (parentPath == "/" && (name[0] == "\\" || name[0] == "//"))
+                name = name.slice(1);
+            var path = parentPath ? parentPath + name : "";
+            if (typeof entry.getFilesAndDirectories === 'function') {
+                pending++;
+                entry.getFilesAndDirectories().then(function(entries) {
+                    walkdDirs(entries, path + "/");
+                    pending--;
+                    done();
+                });
+            } else {
+                entry.fullPath = path;
+                entry.isFile = true;
+                files.push(entry);
+            }
+        });
+        done();
+    };
+    function done() {
+        if (!pending)
+            callback(null, new Batch(files));
+    }
+    walkdDirs([dataTransfer]);
+}
 
 function walkFiles(entry, onEntry, callback) {
     if (!entry) {
