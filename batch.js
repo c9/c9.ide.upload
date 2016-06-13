@@ -74,7 +74,7 @@ Batch.prototype._detectDirectories = function(callback) {
         }
         try {
             var reader = new FileReader();
-            reader.readAsBinaryString(file);
+            reader.readAsArrayBuffer(file);
             reader.onloadend = function(e) {
                 var error = reader.error;
                 var hadError = error && (
