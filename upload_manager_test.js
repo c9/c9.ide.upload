@@ -53,6 +53,12 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         var files;
         
         describe('upload manager', function() {
+            if (!(window.requestFileSystem || window.webkitRequestFileSystem)) {
+                return it.skip("upload manager test requires file system api", function(done) {
+                    done()
+                });
+            }
+            
             before(function(done) {
                 fs.rmdir("/upload", {recursive: true}, function(err) {
                     if (err) return console.error(err);
