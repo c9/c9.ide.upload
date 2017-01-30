@@ -173,7 +173,7 @@ define(function(require, exports, module) {
                 if (el === dropbox) {
                     if (treeAsPane && ctrlKey && dragContext.pane.isTree)
                         return treeEl;
-                    return {cloud9pane: dragContext.pane};
+                    return { cloud9pane: dragContext.pane };
                 }
                 
                 el = el.parentNode;
@@ -217,7 +217,7 @@ define(function(require, exports, module) {
             } else if (dragContext.pane) {
                 dragContext.pane = null;
                 if (dropbox && dropbox.parentNode) {
-                    dragContext.dropboxTimer = setTimeout(function(){
+                    dragContext.dropboxTimer = setTimeout(function() {
                         if (dropbox.parentNode)
                             dropbox.parentNode.removeChild(dropbox);
                     }, 100);
@@ -243,7 +243,7 @@ define(function(require, exports, module) {
             var isOnlineTree;
             try { 
                 isOnlineTree = online && host === tree.getElement("container");
-            } catch(e){}
+            } catch (e) {}
             
             if (isOnlineTree) {
                 if (!treeMouseHandler.releaseMouse) {
@@ -275,16 +275,16 @@ define(function(require, exports, module) {
         
         /***** Lifecycle *****/
         
-        plugin.on("load", function(){
+        plugin.on("load", function() {
             load();
         });
-        plugin.on("enable", function(){
+        plugin.on("enable", function() {
             
         });
-        plugin.on("disable", function(){
+        plugin.on("disable", function() {
             
         });
-        plugin.on("unload", function(){
+        plugin.on("unload", function() {
             unload();
         });
         

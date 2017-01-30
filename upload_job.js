@@ -37,7 +37,7 @@ UploadJob.prototype.cancel = function() {
 
 UploadJob.prototype._setState = function(state) {
     this.state = state;
-    this._emit("changeState", { state: state, job: this  });
+    this._emit("changeState", { state: state, job: this });
 };
 
 UploadJob.prototype._error = function(code, message) {
@@ -101,10 +101,10 @@ UploadJob.prototype._startUploadWorker = function() {
     var url = path.join(job.manager.filesPrefix, job.fullPath);
     
     var worker = new Worker(path.join(this.workerPrefix, "upload_worker.js"));
-    worker.postMessage({method: "start", args: [job.file, url]});
+    worker.postMessage({ method: "start", args: [job.file, url]});
     
     this.xhr = {
-        abort: worker.postMessage.bind(worker, {method: "abort"})
+        abort: worker.postMessage.bind(worker, { method: "abort" })
     };
     
     worker.onmessage = function(msg) {

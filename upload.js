@@ -39,7 +39,7 @@ define(function(require, exports, module) {
         var winUploadFiles;
         
         var loaded = false;
-        function load(){
+        function load() {
             if (loaded) return false;
             loaded = true;
             
@@ -82,7 +82,7 @@ define(function(require, exports, module) {
             }
             
             job.on("changeState", function(state) {
-                switch(state.state) {
+                switch (state.state) {
                     case "uploading":
                         // add to tree
                         fsCache.on("readdir", onExpand);
@@ -337,10 +337,10 @@ define(function(require, exports, module) {
                 "File already exists",
                 '"' + root + '" already exists, do you want to replace it? '
                     + "Replacing it will overwrite its current contents.",
-                function(all){ // Overwrite
+                function(all) { // Overwrite
                     callback("replace", all);
                 },
-                function(all){ // Skip
+                function(all) { // Skip
                     if (all) callback("stop", true);
                     else callback("no-replace", false);
                 },
@@ -348,7 +348,7 @@ define(function(require, exports, module) {
             );
         }
     
-        function onShow (){
+        function onShow () {
             if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
                 alert("The File APIs are not fully supported in this browser.");
                 return hideUploadWindow();
@@ -373,16 +373,16 @@ define(function(require, exports, module) {
             
         /***** Lifecycle *****/
         
-        plugin.on("load", function(){
+        plugin.on("load", function() {
             load();
         });
-        plugin.on("enable", function(){
+        plugin.on("enable", function() {
             
         });
-        plugin.on("disable", function(){
+        plugin.on("disable", function() {
             
         });
-        plugin.on("unload", function(){
+        plugin.on("unload", function() {
             loaded = false;
         });
         

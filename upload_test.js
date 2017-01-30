@@ -123,7 +123,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             });
             
             if (!onload.remain) {
-                describe("unload()", function(){
+                describe("unload()", function() {
                     it('should destroy all ui elements when it is unloaded', function(done) {
                         upload.unload();
                         done();

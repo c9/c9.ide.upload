@@ -55,20 +55,20 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         describe('upload manager', function() {
             if (!(window.requestFileSystem || window.webkitRequestFileSystem)) {
                 return it.skip("upload manager test requires file system api", function(done) {
-                    done()
+                    done();
                 });
             }
             
             before(function(done) {
-                fs.rmdir("/upload", {recursive: true}, function(err) {
+                fs.rmdir("/upload", { recursive: true }, function(err) {
                     if (err) return console.error(err);
                     fs.mkdirP("/upload", function() {
                         if (err) return console.error(err);
                         getBrowserFs(function(err, _browserFs) {
                             browserFs = _browserFs;
                             createFiles(browserFs.root, {
-                                "hello.txt": new Blob(['Hello World'], {type: 'text/plain'}),
-                                "tag.txt": new Blob(['Guten Tag'], {type: 'text/plain'})
+                                "hello.txt": new Blob(['Hello World'], { type: 'text/plain' }),
+                                "tag.txt": new Blob(['Guten Tag'], { type: 'text/plain' })
                             }, function(err, _files) {
                                 if (err) return console.error(err);
                                 files = _files;
@@ -77,7 +77,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
                                     if (err) return console.error(err);
                                     
                                     createFiles(dir, {
-                                        "sub.txt": new Blob(["s'up?"], {type: 'text/plain'})
+                                        "sub.txt": new Blob(["s'up?"], { type: 'text/plain' })
                                     }, function(err, _files) {
                                         if (err) return console.error(err);
                                         done();
@@ -90,7 +90,7 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
             });
             
             after(function(done) {
-                fs.rmdir("/upload", {recursive: true}, done);
+                fs.rmdir("/upload", { recursive: true }, done);
             });
             
             it('should upload a single file', function(done) {
@@ -176,20 +176,20 @@ require(["lib/architect/architect", "lib/chai/chai"], function (architect, chai)
         
         function getBrowserFs(callback) {
             var requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-            requestFileSystem(window.TEMPORARY, 5*1024*1024 /*5MB*/, function onInitFs(fs) {
+            requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024 /*5MB*/, function onInitFs(fs) {
                 callback(null, fs);
             }, callback);
         }
         
         function mkdir(parent, dir, callback) {
-            parent.getDirectory(dir, {create: true}, function(dirEntry) {
+            parent.getDirectory(dir, { create: true }, function(dirEntry) {
                 callback(null, dirEntry);
             }, callback);
         }
         
         function createFiles(dir, files, callback) {
             parallelKeys(files, function(name, blob, next) {
-                dir.getFile(name, {create: true}, function(fileEntry) {
+                dir.getFile(name, { create: true }, function(fileEntry) {
                     fileEntry.createWriter(function(fileWriter) {
                         fileWriter.onwriteend = function(e) {
                             fileEntry.file(function(file) {

@@ -211,7 +211,7 @@ Batch.fromMozFileApi = function(dataTransfer, callback) {
             callback(null, new Batch(files));
     }
     walkdDirs([dataTransfer]);
-}
+};
 
 function walkFiles(entry, onEntry, callback) {
     if (!entry) {
@@ -249,7 +249,7 @@ function forEach(list, onEntry, callback) {
         onEntry(list[i], function(err) {
             if (err) return callback(err);
             
-            loop(i+1);
+            loop(i + 1);
         });
     })(0);
 }

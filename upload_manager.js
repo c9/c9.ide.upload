@@ -42,7 +42,7 @@ define(function(require, module, exports) {
         var jobs, concurrentUploads, timer;
 
         var loaded = false;
-        function load(){
+        function load() {
             if (loaded) return false;
             loaded = true;
             
@@ -61,7 +61,7 @@ define(function(require, module, exports) {
                         return uploadFiles(root, false, next);
                     
                     getAction(batch, root, function(action) {
-                        switch(action) {
+                        switch (action) {
                             case "replace":
                                 uploadFiles(root, true, next);
                                 break;
@@ -98,7 +98,7 @@ define(function(require, module, exports) {
                     
                 var uploaded = 0;
                 files.forEach(function(file) {
-                    var job =  uploadFile(file, path.join(targetPath, file.fullPath));
+                    var job = uploadFile(file, path.join(targetPath, file.fullPath));
                     file.job = job;
                     job.checkOverwrite = doOverwrite && !toAll;
                     job.on("changeState", function(e) {
@@ -212,23 +212,23 @@ define(function(require, module, exports) {
                 onEntry(list[i], function(err) {
                     if (err) return callback(err);
                     
-                    loop(i+1);
+                    loop(i + 1);
                 });
             })(0);
         }
         
         /***** Lifecycle *****/
         
-        plugin.on("load", function(){
+        plugin.on("load", function() {
             load();
         });
-        plugin.on("enable", function(){
+        plugin.on("enable", function() {
             
         });
-        plugin.on("disable", function(){
+        plugin.on("disable", function() {
             
         });
-        plugin.on("unload", function(){
+        plugin.on("unload", function() {
             loaded = false;
         });
         

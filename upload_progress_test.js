@@ -97,8 +97,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 it('should open the list', function(done) {
                     progress.show();
                     
-                    var job1 = uploadManager.uploadFile({ name: "hello.txt", size: 423}, "/lib/hello.txt");
-                    var job2 = uploadManager.uploadFile({ name: "juhu.txt", size: 423}, "/lib/juhu.txt");
+                    var job1 = uploadManager.uploadFile({ name: "hello.txt", size: 423 }, "/lib/hello.txt");
+                    var job2 = uploadManager.uploadFile({ name: "juhu.txt", size: 423 }, "/lib/juhu.txt");
                     
                     job1._progress(0.55);
                     
@@ -107,7 +107,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
 
             });
             if (!onload.remain) {
-                describe("unload()", function(){
+                describe("unload()", function() {
                     it('should destroy all ui elements when it is unloaded', function(done) {
                         progress.unload();
                         

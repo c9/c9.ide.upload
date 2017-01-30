@@ -47,8 +47,8 @@ define(function(require, exports, module) {
             ui.insertSkin({
                 name: "uploadfiles",
                 data: require("text!./markup/skin.xml"),
-                "media-path" : options.staticPrefix + "/images/",
-                "icon-path"  : options.staticPrefix + "/icons/"
+                "media-path": options.staticPrefix + "/images/",
+                "icon-path": options.staticPrefix + "/icons/"
             }, plugin);
             
             // Create UI elements
@@ -74,7 +74,7 @@ define(function(require, exports, module) {
             mdlUploadActivity = new TreeData();
             tree.setDataProvider(mdlUploadActivity);
             tree.renderer.setScrollMargin(10, 10);
-            tree.renderer.setTheme({cssClass: "list-uploadactivity"});
+            tree.renderer.setTheme({ cssClass: "list-uploadactivity" });
             mdlUploadActivity.rowHeight = 21;
             mdlUploadActivity.rowHeightInner = 20;
             mdlUploadActivity.getContentHTML = function(node) {
@@ -82,8 +82,8 @@ define(function(require, exports, module) {
                     + node.label
                     + "</span>"
                     + "<span class='uploadactivity-progress'>"
-                    + (node.progress == undefined ? "&nbsp;": node.progress + "%") +"</span>"
-                    + "<span class='uploadactivity-delete'>&nbsp;</span>"
+                    + (node.progress == undefined ? "&nbsp;" : node.progress + "%") + "</span>"
+                    + "<span class='uploadactivity-delete'>&nbsp;</span>";
             };
             mdlUploadActivity.updateProgress = function(node, val) {
                 node.progress = val;
@@ -105,7 +105,7 @@ define(function(require, exports, module) {
                 if (ev.domEvent.target.className == 'uploadactivity-delete') {
                     tree._signal("delete", ev.getNode());
                 }
-            })
+            });
             
             plugin.getElement("btnCancelUploads").on("click", function(e) {
                 cancelAll();
@@ -136,7 +136,7 @@ define(function(require, exports, module) {
                 height: "22px",
                 duration: 0.2,
                 timingFunction: "ease-in-out",
-            }, function(){
+            }, function() {
                 tree && tree.resize();
             }); 
         }
@@ -169,10 +169,10 @@ define(function(require, exports, module) {
         }
         
         function onAddUploadJob(e) {
-            var job = e.job
+            var job = e.job;
             show();
             
-            var node = {label: job.file.name, job_id: job.id};
+            var node = { label: job.file.name, job_id: job.id };
             job.node = node;
             mdlUploadActivity.visibleItems.push(node);
             mdlUploadActivity._signal("change");
@@ -182,7 +182,7 @@ define(function(require, exports, module) {
         
         function updateProgress(e) {
             if (e.job.node) {
-                mdlUploadActivity.updateProgress(e.job.node, Math.round(e.progress * 100))
+                mdlUploadActivity.updateProgress(e.job.node, Math.round(e.progress * 100));
             }
         }
         
